@@ -15,7 +15,10 @@ public class Main {
      MyTest test=new MyTest();
 
         //test.testCheckVariable();
-        test.testIfExpression();
+        //test.testIfExpression();
+         //test.testPolandrrecord();
+
+        test.testHappend();
 
 /*        Game G=new Game();
         G.variables.things.put("Стол",1);
