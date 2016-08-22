@@ -1,5 +1,9 @@
 package main.java;
 
+import sun.misc.IOUtils;
+import sun.nio.ch.IOUtil;
+
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -35,6 +39,18 @@ public class MyTest {
                 Variables.instantiate().character.get("Фантазия")));
     }
 
+    void  WriteInt(){
+        String[] arr=new String[]{"Один","Два","Три","Четыре","Пять"};
+        File f=new File();
+        f.Write(arr,"test");
+for(int i=0; i<arr.length;i++){
+    System.out.println((String) f.Read("test",i));
+}
+
+
+
+
+    }
 
     public  void testIfExpression() {
         //Map<String,Integer> people=Variables.instantiate().people;

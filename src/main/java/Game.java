@@ -1,5 +1,7 @@
 package main.java;
 
+import java.io.*;
+
 /**
  * Created by arsen on 15.08.2016.
  */
@@ -8,4 +10,7 @@ public class Game {
     public  Game(){
         //variables=new Variables();
     }
+
+
+
 }

@@ -52,40 +52,40 @@ public class Variables  implements Serializable{
         people=new Hashtable<>();
     }
 
-    public   Variables Read(String name){
-        FileInputStream fis;
-        ObjectInputStream ois;
-        try{
-            fis=new FileInputStream(new File(name));
-            ois=new ObjectInputStream(fis);
-            return  (Variables)ois.readObject();
-        }catch (FileNotFoundException e){
-
-        }catch (IOException e){
-
-        }catch (ClassNotFoundException e){
-
-        }
-        return  null;
-
-    }
-
-
-
-    public  void Write(String name,Variables var){
-        if(var==null){
-            return;
-        }
-        FileOutputStream fos;
-        ObjectOutputStream oos;
-        try {
-            fos=new FileOutputStream(new File(name));
-            oos=new ObjectOutputStream(fos);
-            oos.writeObject(var);
-        }catch (FileNotFoundException e){
-            System.out.println(e);
-        }catch (IOException e){
-            System.out.println(e);
-        }
-    }
+//    public   Variables Read(String name){
+//        FileInputStream fis;
+//        ObjectInputStream ois;
+//        try{
+//            fis=new FileInputStream(new File(name));
+//            ois=new ObjectInputStream(fis);
+//            return  (Variables)ois.readObject();
+//        }catch (FileNotFoundException e){
+//
+//        }catch (IOException e){
+//
+//        }catch (ClassNotFoundException e){
+//
+//        }
+//        return  null;
+//
+//    }
+//
+//
+//
+//    public  void Write(String name,Variables var){
+//        if(var==null){
+//            return;
+//        }
+//        FileOutputStream fos;
+//        ObjectOutputStream oos;
+//        try {
+//            fos=new FileOutputStream(new File(name));
+//            oos=new ObjectOutputStream(fos);
+//            oos.writeObject(var);
+//        }catch (FileNotFoundException e){
+//            System.out.println(e);
+//        }catch (IOException e){
+//            System.out.println(e);
+//        }
+//    }
 }
