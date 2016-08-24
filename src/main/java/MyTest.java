@@ -29,7 +29,8 @@ public class MyTest {
         Variables.instantiate().character.put("Знание",10);
 
         ButtonGame Bg=new ButtonGame();
-        Bg.HappendParse("[PМороз]-15;[UПогода]=\"Лето\";[CФантазия]=[CЗнание];[UAge]=20;move12");
+        Bg.HappendParse("move12;show[CЗнание];hight2");
+        //[PМороз]-15;[UПогода]="Лето";[CФантазия]=[CЗнание];[UAge]=20;
         //
 
 

@@ -18,9 +18,9 @@ public class Main {
         //test.testIfExpression();
          //test.testPolandrrecord();
 
-        //test.testHappend();
+        test.testHappend();
 
-        test.WriteInt();
+        //test.WriteInt();
 
 /*        Game G=new Game();
         G.variables.things.put("Стол",1);

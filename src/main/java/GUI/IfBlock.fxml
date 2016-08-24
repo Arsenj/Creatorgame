@@ -1,0 +1,56 @@
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.ComboBox?>
+
+
+
+<GridPane>
+    <rowConstraints>
+        <RowConstraints/>
+        <RowConstraints/>
+    </rowConstraints>
+    <children>
+        <FlowPane GridPane.rowIndex="0">
+            <children>
+                <Label  text="IF" />
+                <Label text="( "/>
+                <Label text=" )"/>
+            </children>
+        </FlowPane>
+
+        <GridPane GridPane.rowIndex="1">
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
+            <Label  text="THEN" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <ComboBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <items>
+
+
+                </items>
+            </ComboBox>
+            <ComboBox GridPane.columnIndex="2" GridPane.rowIndex="1">
+                <items>
+
+                </items>
+            </ComboBox>
+            <ComboBox GridPane.columnIndex="3" GridPane.rowIndex="1">
+                <items>
+                </items>
+            </ComboBox>
+        </GridPane>
+
+
+    </children>
+</GridPane>

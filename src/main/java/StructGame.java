@@ -1,8 +1,10 @@
 package main.java;
 
+import javafx.util.Pair;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +14,7 @@ public class StructGame {
     public  int id;
     public  String text;
     public List<ButtonGame> buttons;
+    public List<Pair<String,String>> onLoadHappend;
 
 
 
@@ -27,6 +30,8 @@ public class StructGame {
         return sb.toString();
     }
     StructGame(){
+        buttons=new ArrayList<>();
+        onLoadHappend=new ArrayList<>();
 
     }
 

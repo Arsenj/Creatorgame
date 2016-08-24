@@ -15,6 +15,7 @@ public class ButtonGame {
     public List<Pair<String,String>> whatHappend;
 
 
+
  private    void SetHashTable(String var,Object val){
         char type=var.charAt(0);
         String key=var.substring(1,var.length());
@@ -79,13 +80,25 @@ public class ButtonGame {
             }
 
 
-        }else if(var[0].equals("move")){
-            System.out.println("Go to "+var[1]);
+        }else {
+            switch (var[0]){
+                case "move":
+                    System.out.println("Go to "+var[1]);
+                    break;
+                case "show":
+                    System.out.println("Save value to "+var[1]);
+                    break;
+                case "hight":
+                    System.out.println("Hight button "+var[1]);
+                    break;
+
+
+            }
         }
     }
 
   public   void HappendParse(String StrHappend){
-        String rex="(?:(move)(\\d+)|(\\[.*?\\])([+-=])(-?\\d+|\".*?\"|\\[.*?\\]))";
+        String rex="(?:(move)(\\d+)|(\\[.*?\\])([+-=])(-?\\d+|\".*?\"|\\[.*?\\])|(show)\\[(.*?)\\]|(hight)(\\d+))";
         Pattern patern=Pattern.compile(rex);
         Matcher matcher=patern.matcher(StrHappend);
         String[] var=new String[3];

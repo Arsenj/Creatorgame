@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane fx:id="globGrid" gridLinesVisible="true" prefHeight="241.0" prefWidth="769.0" stylesheets="@style/style.css" xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.GUI.SampleController">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="30" />
+        <ColumnConstraints percentWidth="40" />
+        <ColumnConstraints percentWidth="30" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints vgrow="SOMETIMES" />
+    </rowConstraints>
+
+
+
+        <MenuBar prefHeight="25.0" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0">
+            <menus>
+            <Menu text="File">
+                <items>
+                    <MenuItem text="New" />
+                    <MenuItem text="Open" />
+                    <MenuItem text="Save" />
+                    <MenuItem text="Save As" />
+                    <SeparatorMenuItem />
+                    <MenuItem onAction="#handleExitButtonAction" text="Exit" />
+                </items>
+            </Menu>
+            </menus>
+                </MenuBar>
+    <Pane prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <children>
+
+      </children></Pane>
+   <Accordion maxWidth="1.7976931348623157E308" GridPane.columnIndex="0" GridPane.rowIndex="1">
+     <panes>
+       <TitledPane animated="false" maxWidth="1.7976931348623157E308" text="untitled 1">
+         <content>
+           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+         </content>
+       </TitledPane>
+       <TitledPane animated="false" text="untitled 2">
+         <content>
+           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+         </content>
+       </TitledPane>
+       <TitledPane animated="false" text="untitled 3">
+         <content>
+           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+         </content>
+       </TitledPane>
+     </panes>
+   </Accordion>
+   <SplitPane dividerPositions="0.6448598130841121" orientation="VERTICAL" prefHeight="156.0" prefWidth="231.0" GridPane.columnIndex="2" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="1" GridPane.vgrow="SOMETIMES">
+     <items>
+       <AnchorPane fx:id="iFContent" minHeight="0.0" minWidth="0.0" prefHeight="96.0" prefWidth="130.0">
+            <children>
+
+            </children>
+         </AnchorPane>
+       <AnchorPane fx:id="anchor1" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="Infinity" prefWidth="Infinity">
+            <children>
+               <SplitPane dividerPositions="0.5" layoutX="0" layoutY="0" prefWidth="${anchor1.width}">
+                   <items>
+                       <VBox><Label text="qwe" /></VBox>
+                       <VBox><TextField text="qwe" /></VBox>
+                   </items>
+               </SplitPane>
+            </children>
+         </AnchorPane>
+     </items>
+   </SplitPane>
+
+
+
+    </GridPane>
