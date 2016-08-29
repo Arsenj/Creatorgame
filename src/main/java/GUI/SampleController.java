@@ -2,12 +2,18 @@ package main.java.GUI;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Accordion;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.util.Pair;
+import main.java.Game;
 import sun.plugin.javascript.navig.Anchor;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.*;
 
 /**
  * Created by arsen on 23.08.2016.
@@ -18,21 +24,33 @@ public class SampleController {
     @FXML
     GridPane globGrid;
     @FXML
-    AnchorPane iFContent;
+    VBox iFContent;
+    @FXML
+    Accordion listVariable;
+    CreateGui createGui;
 
 
-    void CreateBlockIf(){
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("main/java/GUI/IfBlock.fxml"));
-        fxmlLoader.setRoot(iFContent);
-      //  fxmlLoader.setController(this);
-        try {
-            fxmlLoader.load();
-        }catch (IOException e){
-System.out.println("IfBlock.fxml Not loaded");
-        }
+    java.util.List<Pair<String,Map>> listTitle;
+
+    public SampleController(){
+        createGui=new CreateGui();
     }
 
-    @FXML protected void handleExitButtonAction(ActionEvent event){
-        CreateBlockIf();
+
+@FXML
+  public   void CreateBlockIf(){
+            iFContent.getChildren().add(createGui.CreateIFBlock(null));
     }
+
+    public  void FillVariable(){
+            createGui.TestCreateContentAccordion(listVariable,listTitle);
+    }
+
+    public  void onTextChange(){
+        System.out.println("text changed");
+    }
+
+
+
+
 }

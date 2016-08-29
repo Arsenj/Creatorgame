@@ -8,10 +8,10 @@ import java.util.Map;
  * Created by arsen on 15.08.2016.
  */
 public class Variables  implements Serializable{
-     Map<String,Integer> things;
-     Map<String,String> userVariable;
-     Map<String,Integer> character;
-     Map<String,Integer> people;
+     public Map<String,Integer> things;
+     public Map<String,String> userVariable;
+     public Map<String,Integer> character;
+     public Map<String,Integer> people;
     private transient static Variables inst;
 
 /*
