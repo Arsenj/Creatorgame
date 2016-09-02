@@ -2,7 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Accordion?>
-<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -10,23 +10,23 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<?import com.sun.javafx.scene.control.skin.SplitPaneSkin.Content?>
-<?import java.lang.String?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.control.Separator?>
 <GridPane fx:id="globGrid" gridLinesVisible="true" prefHeight="241.0" prefWidth="769.0" stylesheets="@style/style.css" xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.GUI.SampleController">
     <columnConstraints>
-      <!--  <ColumnConstraints percentWidth="20" />
-        <ColumnConstraints percentWidth="50" />
-        <ColumnConstraints percentWidth="30" />-->
+        <!--  <ColumnConstraints percentWidth="20" />
+          <ColumnConstraints percentWidth="50" />
+          <ColumnConstraints percentWidth="30" />-->
         <ColumnConstraints percentWidth="100.0" />
-      <ColumnConstraints />
+        <ColumnConstraints />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints />
@@ -34,12 +34,9 @@
     </rowConstraints>
 
 
-
-
-
-   <!-- <Separator GridPane.rowIndex="1" GridPane.columnSpan="1" halignment="RIGHT" orientation="VERTICAL" prefWidth="20" prefHeight="200.0" />-->
-        <MenuBar prefHeight="25.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
-            <menus>
+    <!-- <Separator GridPane.rowIndex="1" GridPane.columnSpan="1" halignment="RIGHT" orientation="VERTICAL" prefWidth="20" prefHeight="200.0" />-->
+    <MenuBar prefHeight="25.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
+        <menus>
             <Menu text="File">
                 <items>
                     <MenuItem text="New" />
@@ -50,45 +47,61 @@
                     <MenuItem text="Exit" />
                 </items>
             </Menu>
-                <Menu text="Test button">
-                    <items>
-                        <MenuItem onAction="#FillVariable" text="FillAccordion" />
-                        <MenuItem onAction="#CreateBlockIf" text="Add IfBlock" />
-                        <MenuItem onAction="#checkMemory" text="Chaeck memory" />
-                    </items>
-                </Menu>
-            </menus>
-                </MenuBar>
+            <Menu text="Test button">
+                <items>
+                    <MenuItem onAction="#FillVariable" text="FillAccordion" />
+                    <MenuItem onAction="#CreateBlockIf" text="Add IfBlock" />
+                    <MenuItem onAction="#checkMemory" text="Chaeck memory" />
+                </items>
+            </Menu>
+        </menus>
+    </MenuBar>
 
 
-<!--main Contant-->
-    <SplitPane dividerPositions="0.2, 0.7" orientation="HORIZONTAL" GridPane.columnIndex="0" GridPane.rowIndex="1">
+    <!--main Contant-->
+    <SplitPane dividerPositions="0.2, 0.7" nodeOrientation="LEFT_TO_RIGHT" orientation="HORIZONTAL" GridPane.columnIndex="0" GridPane.rowIndex="1">
         <items>
-            <Accordion fx:id="listVariable" prefWidth="50">
-               <!-- <panes>
-                    <TitledPane animated="false" maxWidth="1.7976931348623157E308" text="untitled 1">
-                        <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                    </TitledPane>
-                    <TitledPane animated="false" text="untitled 2">
-                        <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                    </TitledPane>
-                    <TitledPane animated="false" text="untitled 3">
-                        <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                    </TitledPane>
-                </panes>-->
+            <Accordion fx:id="listVariable">
+                <!-- <panes>
+                     <TitledPane animated="false" maxWidth="1.7976931348623157E308" text="untitled 1">
+                         <content>
+                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                         </content>
+                     </TitledPane>
+                     <TitledPane animated="false" text="untitled 2">
+                         <content>
+                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                         </content>
+                     </TitledPane>
+                     <TitledPane animated="false" text="untitled 3">
+                         <content>
+                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                         </content>
+                     </TitledPane>
+                 </panes>-->
             </Accordion>
-            <Pane prefWidth="100.0">
-            <children>
+            <ScrollPane fx:id="scrollPane1">
+                        <VBox spacing="10" fx:id="pageContent" alignment="TOP_CENTER">
+                            <padding>
+                                <Insets bottom="5" left="5" right="10" top="5" />
+                            </padding>
+                            <children>
 
+                                <TextArea wrapText="true" VBox.vgrow="ALWAYS">
+                                    <padding>
+                                        <Insets bottom="5" top="5" />
+                                    </padding>
+                                </TextArea>
+                                <Button fx:id="addButtonChoice" onAction="#OnaddButtonChoice" alignment="TOP_CENTER" text="addButton">
+                                    <padding>
+                                        <Insets bottom="5" top="5" />
+                                    </padding>
+                                </Button>
+                                <Separator></Separator>
+                            </children>
+                        </VBox>
 
-
-            </children></Pane>
+            </ScrollPane>
 
             <SplitPane dividerPositions="0.6448598130841121" orientation="VERTICAL" prefHeight="156.0" prefWidth="231.0">
 
@@ -96,6 +109,9 @@
                     <!--<AnchorPane fx:id="iFContent" minHeight="0.0" minWidth="0.0" prefHeight="96.0" prefWidth="130.0" />-->
                     <ScrollPane minHeight="0.0" minWidth="0.0" prefHeight="96.0" prefWidth="130.0">
                         <VBox fx:id="iFContent">
+                            <children>
+                                <Button alignment="TOP_CENTER" onAction="#CreateBlockIf" text="Add new if" />
+                            </children>
                             <padding>
                                 <Insets bottom="10" left="15" right="15" top="10" />
                             </padding>
@@ -108,8 +124,14 @@
                         <children>
                             <SplitPane dividerPositions="0.5" layoutX="0" layoutY="0" prefWidth="${anchor1.width}">
                                 <items>
-                                    <VBox><Label text="qwe" /></VBox>
-                                    <VBox><TextField text="qwe" /></VBox>
+                                    <VBox>
+                                        <Label text="Текст" />
+                                        <Label text="Номмер" />
+                                    </VBox>
+                                    <VBox>
+                                        <TextField  fx:id="textButton"/>
+                                        <TextField  fx:id="numberButton"/>
+                                    </VBox>
                                 </items>
                             </SplitPane>
                         </children>
@@ -120,13 +142,4 @@
     </SplitPane>
 
 
-
-
-
-
-
-
-
-
-
-    </GridPane>
+</GridPane>

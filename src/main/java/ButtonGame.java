@@ -10,9 +10,10 @@ import java.util.regex.Matcher;
 
 public class ButtonGame {
     public boolean enable;
-    public  boolean textBlock;
+    //public  boolean textBlock;
     public String ifButtonExist;
     public List<Pair<String,String>> whatHappend;
+    public String text;
 
 
 
@@ -118,7 +119,10 @@ public class ButtonGame {
     }
 
 
- public    ButtonGame(){
+ public    ButtonGame(String text){
+     enable=true;
+     this.text=text;
+    // textBlock=false;
      whatHappend=new ArrayList<>();
     }
 }

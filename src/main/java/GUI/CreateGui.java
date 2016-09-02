@@ -3,6 +3,7 @@ package main.java.GUI;
 import java.awt.ScrollPane;
 import java.awt.event.*;
 
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -11,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,6 +27,7 @@ import javafx.scene.layout.*;
 import javafx.util.Callback;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
+import main.java.ButtonGame;
 import main.java.Variables;
 import org.omg.CORBA.Object;
 import sun.nio.cs.CharsetMapping;
@@ -364,11 +367,14 @@ button.setOpacity(opacity);
     cb3.setPrefWidth(90);
     gp2.add(cb3, 3, 1);
 }
-    public GridPane CreateIFBlock(List<Pair<String, String>> whatHappend) {
+
+
+    public void CreateIFBlock(VBox vBoxParent, List<Pair<String, String>> whatHappend) {
+        double opacity=0.3;
         GridPane gp = new GridPane();
 
         gp.getRowConstraints().addAll(new RowConstraints(), new RowConstraints());
-        gp.getColumnConstraints().addAll(new ColumnConstraints(), new ColumnConstraints());
+        gp.getColumnConstraints().addAll(new ColumnConstraints(), new ColumnConstraints(),new ColumnConstraints());
         //FlowPane flowP=new FlowPane();
         Label labIF = new Label("IF");
         labIF.setPrefWidth(50);
@@ -380,12 +386,43 @@ button.setOpacity(opacity);
         gp.add(labIF, 0, 0);
         VBox vBox=new VBox();
         gp.add(vBox,1,1);
+        Button button=new Button();
+        gp.add(button,2,0);
+        button.setOpacity(opacity);
+        button.setText("X");
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                vBoxParent.getChildren().remove(gp);
+            }
+        });
+        button.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                button.setOpacity(1);
+            }
+        });
+        button.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                button.setOpacity(opacity);
+            }
+        });
         AddThenBlock(vBox);
         //gp.add(flowP,0,0);
         // flowP.getChildren().addAll(labIF,new Label("( "),new Label(" )"));
+        vBoxParent.getChildren().add(vBoxParent.getChildren().size()-1,gp);
+        //return gp;
+    }
 
 
 
-        return gp;
+
+    public Button CreateButtonOfChoice(VBox parent, String name){
+        Button button=new Button(name);
+
+        parent.getChildren().add(button);
+        return  button;
     }
 }

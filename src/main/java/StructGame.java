@@ -14,8 +14,24 @@ public class StructGame {
     public  int id;
     public  String text;
     public List<ButtonGame> buttons;
+    private  int selectedButton;
     public List<Pair<String,String>> onLoadHappend;
 
+
+
+    public  ButtonGame getButton(int num ){
+        ButtonGame buf=buttons.get(num);
+        if(buf!=null){
+            selectedButton=num;
+        }
+        return buf;
+    }
+    public  int getIndexSelectedButton(){
+        return  selectedButton;
+    }
+    public ButtonGame getSelectedButton(){
+        return  buttons.get(selectedButton);
+    }
 
 
     String PrintText(){
@@ -29,7 +45,8 @@ public class StructGame {
         }
         return sb.toString();
     }
-    StructGame(){
+  public   StructGame(){
+
         buttons=new ArrayList<>();
         onLoadHappend=new ArrayList<>();
 
