@@ -1,7 +1,9 @@
 package main.java;
 
+import javax.swing.event.EventListenerList;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 
 /**
@@ -11,9 +13,10 @@ public class Game {
    public Variables variables;
     public    List<StructGame> structGames;
     private   int currentIndexPage;
-
+    protected  EventListenerList listenerList;
 
     public  Game(){
+        listenerList=new EventListenerList();
 
         structGames=new ArrayList<StructGame>(){
             @Override
@@ -33,15 +36,36 @@ public class Game {
         //variables=new Variables();
     }
 
+    public  void  addPageChangeListener(pageChangedListener pageChangedListener){
+        listenerList.add(main.java.pageChangedListener.class,pageChangedListener);
+    }
+    public  void  removePageChangeListener(pageChangedListener pageChangedListener){
+        listenerList.remove(main.java.pageChangedListener.class,pageChangedListener);
+    }
 
+    void triggeredEvent(PageChangeEvent e){
+        Object[] listeners = listenerList.getListenerList();
+        for(int i=1; i<listeners.length;i++){
+            ((pageChangedListener)listeners[i]).OnPageChanged(e);
+        }
+    }
     public  StructGame getPage(int num ){
+
 
         StructGame buf=structGames.get(num);
         if(buf!=null){
-            currentIndexPage=num;
+            if(currentIndexPage!=num){
+                PageChangeEvent event=new PageChangeEvent(this,num,currentIndexPage);
+                currentIndexPage=num;
+                triggeredEvent(event);
+            }
+
+
         }
+
         return buf;
     }
+
     public StructGame getCurrentPage(){
         return  structGames.get(currentIndexPage);
     }

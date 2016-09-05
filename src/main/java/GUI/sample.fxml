@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
@@ -18,9 +19,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.shape.Line?>
-<?import javafx.scene.control.Separator?>
-<GridPane fx:id="globGrid" gridLinesVisible="true" prefHeight="241.0" prefWidth="769.0" stylesheets="@style/style.css" xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.GUI.SampleController">
+<GridPane fx:id="globGrid" gridLinesVisible="true" prefHeight="294.0" prefWidth="769.0" stylesheets="@style/style.css" xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.GUI.SampleController">
     <columnConstraints>
         <!--  <ColumnConstraints percentWidth="20" />
           <ColumnConstraints percentWidth="50" />
@@ -52,6 +51,8 @@
                     <MenuItem onAction="#FillVariable" text="FillAccordion" />
                     <MenuItem onAction="#CreateBlockIf" text="Add IfBlock" />
                     <MenuItem onAction="#checkMemory" text="Chaeck memory" />
+                    <MenuItem onAction="#TestGoTOFirstPage" text="GoToFirstPage" />
+                    <MenuItem onAction="#TestGoTOSecondPage" text="GoToSecondPage" />
                 </items>
             </Menu>
         </menus>
@@ -81,7 +82,7 @@
                  </panes>-->
             </Accordion>
             <ScrollPane fx:id="scrollPane1">
-                        <VBox spacing="10" fx:id="pageContent" alignment="TOP_CENTER">
+                        <VBox fx:id="pageContent" alignment="TOP_CENTER" spacing="10">
                             <padding>
                                 <Insets bottom="5" left="5" right="10" top="5" />
                             </padding>
@@ -92,12 +93,12 @@
                                         <Insets bottom="5" top="5" />
                                     </padding>
                                 </TextArea>
-                                <Button fx:id="addButtonChoice" onAction="#OnaddButtonChoice" alignment="TOP_CENTER" text="addButton">
+                                <Button fx:id="addButtonChoice" alignment="TOP_CENTER" onAction="#OnaddButtonChoice" text="addButton">
                                     <padding>
                                         <Insets bottom="5" top="5" />
                                     </padding>
                                 </Button>
-                                <Separator></Separator>
+                                <Separator />
                             </children>
                         </VBox>
 
@@ -110,7 +111,7 @@
                     <ScrollPane minHeight="0.0" minWidth="0.0" prefHeight="96.0" prefWidth="130.0">
                         <VBox fx:id="iFContent">
                             <children>
-                                <Button alignment="TOP_CENTER" onAction="#CreateBlockIf" text="Add new if" />
+                                <Button alignment="TOP_CENTER" fx:id="createBlockIf" onAction="#CreateBlockIf" text="Add new if" />
                             </children>
                             <padding>
                                 <Insets bottom="10" left="15" right="15" top="10" />
@@ -129,8 +130,8 @@
                                         <Label text="Номмер" />
                                     </VBox>
                                     <VBox>
-                                        <TextField  fx:id="textButton"/>
-                                        <TextField  fx:id="numberButton"/>
+                                        <TextField fx:id="textButton" />
+                                        <TextField fx:id="numberButton" />
                                     </VBox>
                                 </items>
                             </SplitPane>

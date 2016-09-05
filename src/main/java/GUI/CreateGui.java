@@ -193,6 +193,7 @@ public class CreateGui {
     }
 
 
+
     public void CreateContentAccordion(Accordion accordion, List<Pair<String, Map>> listTitle) {
 
 
@@ -228,7 +229,7 @@ public class CreateGui {
 
     }
 
-public  void AddThenBlock(VBox vBox){
+public  void AddThenBlock(VBox vBox,String whatWillChange){
     double opacity=0.3;
     GridPane gp2 = new GridPane();
     vBox.getChildren().add(gp2);
@@ -258,21 +259,34 @@ button.setOpacity(opacity);
             button.setOpacity(opacity);
         }
     });
-    button.setText("add");
-    button.setOnAction(new EventHandler<ActionEvent>() {
+
+
+
+    EventHandler<ActionEvent> removeAction=new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-            button.setText("X");
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    vBox.getChildren().remove(gp2);
+            vBox.getChildren().remove(gp2);
 
-                }
-            });
-            AddThenBlock(vBox);
         }
-    });
+    };
+
+    if(whatWillChange==null){
+        button.setText("add");
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                button.setText("X");
+                button.setOnAction(removeAction);
+                AddThenBlock(vBox,null);
+            }
+        });
+    }else{
+        button.setText("add");
+        button.setOnAction(removeAction);
+
+    }
+
+
 
     gp2.add(button,4,1);
     //Label thenLab = new Label("THEN");
@@ -369,7 +383,21 @@ button.setOpacity(opacity);
 }
 
 
-    public void CreateIFBlock(VBox vBoxParent, List<Pair<String, String>> whatHappend) {
+ public javafx.scene.control.TextArea getIfTrxtComponent(GridPane parent){
+     //TextField textField;
+
+     for(Node item:parent.getChildren()){
+         if(item.getId().equals("IF")){
+             return (javafx.scene.control.TextArea)item;
+         }
+     }
+      //  TextField textField=(TextField) gp.getChildren().get(1);
+
+        return  null;
+    }
+
+
+    public void CreateIFBlock(VBox vBoxParent, Pair<String, String> whatHappend) {
         double opacity=0.3;
         GridPane gp = new GridPane();
 
@@ -380,6 +408,16 @@ button.setOpacity(opacity);
         labIF.setPrefWidth(50);
         labIF.setAlignment(Pos.TOP_LEFT);
         javafx.scene.control.TextArea textArea = new javafx.scene.control.TextArea();
+        textArea.setId("IF");
+        textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode()==KeyCode.ENTER){
+
+                }
+            }
+        });
+
         textArea.setPrefWidth(100);
         textArea.setPrefHeight(60);
         gp.add(textArea, 1, 0);
@@ -409,7 +447,20 @@ button.setOpacity(opacity);
                 button.setOpacity(opacity);
             }
         });
-        AddThenBlock(vBox);
+
+
+        if(whatHappend!=null){
+            textArea.setText(whatHappend.getKey());
+            разделить "что случится" и поместить в текстовые поля
+            String[] recHeppend= whatHappend.getValue().split();
+            for(int i=0; i<recHeppend.length;i++){
+                AddThenBlock(vBox,recHeppend[i]);
+            }
+        }
+            AddThenBlock(vBox,null);
+
+
+
         //gp.add(flowP,0,0);
         // flowP.getChildren().addAll(labIF,new Label("( "),new Label(" )"));
         vBoxParent.getChildren().add(vBoxParent.getChildren().size()-1,gp);

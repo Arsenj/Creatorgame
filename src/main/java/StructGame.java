@@ -29,9 +29,15 @@ public class StructGame {
     public  int getIndexSelectedButton(){
         return  selectedButton;
     }
+    public void setIndexSelectButton(int indexSelectButton){
+        if(indexSelectButton>=0 && indexSelectButton<buttons.size()){
+            selectedButton=indexSelectButton;
+        }
+    }
     public ButtonGame getSelectedButton(){
         return  buttons.get(selectedButton);
     }
+
 
 
     String PrintText(){
