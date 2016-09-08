@@ -52,12 +52,11 @@ public class SampleController {
     @FXML
     Button createBlockIf;
 
-
     CreateGui createGui;
     java.util.List<Pair<String, Map>> listTitle;
     Game game;
     private static final int howElemensSkip = 3;
-
+    private static final int skipifContent=1;
 
     public SampleController() {
         Initial();
@@ -66,6 +65,7 @@ public class SampleController {
         structGame.id = 1;
         ButtonGame buttonGame=new ButtonGame("Первая кнопка");
         buttonGame.whatHappend.add(new Pair<>("([TСтол]>5&[UПогода]=\"погода\")","[TСтол]+1;[UПогода]=\"Лето\""));
+        buttonGame.whatHappend.add(new Pair<>("([TСтол]>5&[UПогода]=\"погода\")","[TСтол]+1;[UПогода]=\"Лето\";move1"));
         structGame.buttons.add(buttonGame);
         buttonGame=new ButtonGame("Вторая кнопка");
         structGame.buttons.add(buttonGame);
@@ -74,10 +74,10 @@ public class SampleController {
         structGame=new StructGame();
         structGame.id=2;
         buttonGame=new ButtonGame("2.1");
-        buttonGame.whatHappend.add(new Pair<>("IfIfIf","then then then"));
+        buttonGame.whatHappend.add(new Pair<>("IfIfIf","[TСтол]-1"));
         structGame.buttons.add(buttonGame);
         buttonGame=new ButtonGame("2.2");
-        buttonGame.whatHappend.add(new Pair<>("2.2","then 2.2"));
+        buttonGame.whatHappend.add(new Pair<>("2.2","[TСтол]=3;[TСтул]=0"));
         structGame.buttons.add(buttonGame);
         game.structGames.add(structGame);
 
@@ -85,13 +85,14 @@ public class SampleController {
         //test
     }
 
-
-
-
     public void FillPage(){
 
     }
 
+
+    public  void onLostFocus(){
+        System.out.println("Focus lost");
+    }
 
     @FXML
     public void initialize() {
@@ -139,6 +140,8 @@ public class SampleController {
             }
         }
         FillButtonProperties(game.getCurrentPage().getSelectedButton());
+        ReloadIfContent(game.getCurrentPage().getSelectedButton());
+
     }
 
 
@@ -155,48 +158,111 @@ public class SampleController {
         }
         newButton = createGui.CreateButtonOfChoice(pageContent,name);
 
-
-        newButton.focusedProperty().addListener(new ChangeListener<Boolean>() {
-
+        //!!!Альтернатива фокусу - нажатие, т.к фокус срабатывал при сворачивании
+        newButton.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-
-                if (newValue) {
-                    int number = pageContent.getChildren().indexOf(newButton) - howElemensSkip;
+            public void handle(javafx.event.ActionEvent event) {
+                int number = pageContent.getChildren().indexOf(newButton) - howElemensSkip;
 
                     ButtonGame buttonGame = game.getCurrentPage().getButton(number);//numbering from zero and exists first button
                     textButton.setText(buttonGame.text);
                     numberButton.setText(String.valueOf(number + 1));
 
-                    Node node;
-                    int buttonSize=buttonGame.whatHappend.size();
-                    int contentSize=iFContent.getChildren().size();
+                    ReloadIfContent(buttonGame);
+            }
+        });
 
-                    System.out.println("button "+buttonSize+" contentSize "+contentSize);
-                    if(contentSize-1-buttonSize>0){
-                        iFContent.getChildren().remove(buttonSize,contentSize-1);
-                        contentSize=iFContent.getChildren().size();
-                    }else if(contentSize-1<buttonSize){
-                        int count=buttonSize-(contentSize-1);
-                        for(int i=0; i<count;i++){
-                            CreateBlockIf();
+ //       newButton.focusedProperty().addListener(new ChangeListener<Boolean>() {
+//
+//            @Override
+//            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+//
+//                if (newValue) {
+//                    int number = pageContent.getChildren().indexOf(newButton) - howElemensSkip;
+//
+//                    ButtonGame buttonGame = game.getCurrentPage().getButton(number);//numbering from zero and exists first button
+//                    textButton.setText(buttonGame.text);
+//                    numberButton.setText(String.valueOf(number + 1));
+//
+//                    ReloadIfContent(buttonGame);
+//
+//                }
+//            }
+//        });
+//
 
-                        }
-                    }
-                    for (int j = 0; j < buttonGame.whatHappend.size(); j++) {
-                        for (int i = 0; i < iFContent.getChildren().size() - 1; i++) {
-                            node = iFContent.getChildren().get(i);
-                            if (node.getClass() == GridPane.class) {
-                                createGui.getIfTrxtComponent((GridPane) node).setText(buttonGame.whatHappend.get(j).getKey());
 
-                            }
-                        }
-                    }
+    }
+
+    public boolean CheckIf(String s){
+        return  true;
+    }
+
+    public void CheckAndSave(){
+        ButtonGame buttonGame= game.getCurrentPage().getSelectedButton();
+        Node item;
+        String ifText;
+        for(int i=0;i<iFContent.getChildren().size()-skipifContent;i++){
+            item=iFContent.getChildren().get(i);
+            if(item.getClass()==GridPane.class){
+                 ifText=createGui.getIfTrxtComponent((GridPane)item);
+                if(CheckIf(ifText)){
+
+                }else {
+                    System.out.println(String.format("Sintax at \"if\" %d ",i+1));
+                }
+            }
+            ComboBox[] cb=createGui.GetComboRec((GridPane)item);
+            if(cb[0].getEditor().getText().equals("")){
+                System.out.println("Field must not be empty");
+                continue;
+            };
+            if(Variables.instantiate().Find(cb[0].getEditor().getText()).size()>0){
+                проверки на валидность if-then блоков
+            }
+
+        }
+
+
+    }
+
+
+    public void ReloadIfContent(ButtonGame buttonGame){
+
+
+
+        if(buttonGame==null){
+            buttonGame=game.getCurrentPage().getSelectedButton();
+        }
+        Node node;
+        int buttonSize=buttonGame.whatHappend.size();
+        int contentSize=iFContent.getChildren().size()-skipifContent;
+
+        System.out.println("button "+buttonSize+" contentSize "+contentSize);
+        int countAdd=0;
+        if(contentSize-1-buttonSize>0){
+            iFContent.getChildren().remove(buttonSize,contentSize);
+            contentSize=iFContent.getChildren().size()-skipifContent;
+        }else if(contentSize-1<buttonSize){ //Если нехватает блоков то создаём и сразу заполняем
+
+            countAdd=buttonSize-(contentSize);
+            for(int i=0; i<countAdd;i++){
+              createGui.CreateIFBlock(iFContent,buttonGame.whatHappend.get(i+contentSize));
+                //CreateBlockIf();
+            }
+        }       //а тут остаётся только переписать существующие блоки
+       // for (int j = 0; j < contentSize-1; j++) {
+            for (int i = 0; i < iFContent.getChildren().size() - 1-countAdd; i++) {
+                node = iFContent.getChildren().get(i);
+                if (node.getClass() == GridPane.class) {
+                    createGui.setIfTrxtComponent((GridPane) node,buttonGame.whatHappend.get(i).getKey());
+                    createGui.FillThenBlock((GridPane)node,buttonGame.whatHappend.get(i).getValue());
 
                 }
             }
-        });
+       // }
     }
+
 
     public void TestGoTOSecondPage(){
         game.getPage(1);
@@ -292,6 +358,15 @@ public class SampleController {
                 }
             }
         });
+        iFContent.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(oldValue){
+                    onLostFocus();
+                }
+
+            }
+        });
     }
 
     private void Initial() {
@@ -316,6 +391,7 @@ public class SampleController {
                     }
             }
         });
+
 //        observableMap.addListener(new MapChangeListener() {
 //            @Override
 //            public void onChanged(Change change) {

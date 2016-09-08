@@ -4,6 +4,7 @@ import java.awt.ScrollPane;
 import java.awt.event.*;
 
 
+import com.sun.org.apache.xpath.internal.operations.Gt;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -28,6 +29,7 @@ import javafx.util.Callback;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
 import main.java.ButtonGame;
+import main.java.ParseIf;
 import main.java.Variables;
 import org.omg.CORBA.Object;
 import sun.nio.cs.CharsetMapping;
@@ -44,6 +46,9 @@ import java.util.function.Predicate;
  */
 
 public class CreateGui {
+
+    private  int SkipifContent=1;
+
 
 
     public void TestCreateContentAccordion(Accordion accordion, List<Pair<String, Map>> listTitle) {
@@ -193,7 +198,6 @@ public class CreateGui {
     }
 
 
-
     public void CreateContentAccordion(Accordion accordion, List<Pair<String, Map>> listTitle) {
 
 
@@ -229,190 +233,309 @@ public class CreateGui {
 
     }
 
-public  void AddThenBlock(VBox vBox,String whatWillChange){
-    double opacity=0.3;
-    GridPane gp2 = new GridPane();
-    vBox.getChildren().add(gp2);
-    //GridIfBlock.add(gp2, 0, 1, 2, 1);
-    vBox.setMargin(gp2,new Insets(10, 0, 10, 5));
-    //GridIfBlock.setMargin(gp2, new Insets(0, 0, 20, 5));
 
-    gp2.getRowConstraints().addAll(new RowConstraints());
-    gp2.getColumnConstraints().addAll(new ColumnConstraints(),
-            new ColumnConstraints(),
-            new ColumnConstraints(),
-            new ColumnConstraints(),
-            new ColumnConstraints()
-    );
-Button button=new Button();
-
-button.setOpacity(opacity);
-    button.setOnMouseEntered(new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent event) {
-            button.setOpacity(1);
-        }
-    });
-    button.setOnMouseExited(new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent event) {
-            button.setOpacity(opacity);
-        }
-    });
-
-
-
-    EventHandler<ActionEvent> removeAction=new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-            vBox.getChildren().remove(gp2);
+    public String[] whatHeppenedSplit(String s) {
+        if (s == null) {
+            return null;
 
         }
-    };
+        String[] ret = new String[3];
+        String[] options = {"move", "hight", "show"};
+        for (int i = 0; i < 2; i++) {
+            if (s.indexOf(options[i]) == 0) {
+                ret[0] = options[i];
+                ret[1] = "=";
+                ret[2] = s.substring(options[i].length());
+                return ret;
+            }
 
-    if(whatWillChange==null){
-        button.setText("add");
-        button.setOnAction(new EventHandler<ActionEvent>() {
+        }
+        if (s.indexOf(options[2]) == 0) {
+            ret[0] = options[2];
+            ret[1] = null;
+            ret[2] = s.substring(s.indexOf("[")+1, s.indexOf("]"));
+            return ret;
+        }
+        String[] strBuf = s.split("[-+=]");
+        if (strBuf.length == 2 && strBuf[0] != null && strBuf[0].indexOf("[") == 0) {
+            ret[0] = strBuf[0].substring(1, strBuf[0].length() - 1);
+        } else {
+            return null;
+        }
+        if (strBuf[1].indexOf("[") == 0) {
+            ret[2] = strBuf[1].substring(2, strBuf[1].length() - 1);
+
+        } else {
+            ret[2] = strBuf[1];
+        }
+        int length=ret[0].length()+2;
+        ret[1]=s.substring(length,length+1);
+        return ret;
+    }
+
+
+    public void AddThenBlock(VBox vBox, String whatWillChange,boolean last) {
+        double opacity = 0.3;
+        GridPane gp2 = new GridPane();
+        if(last){
+        vBox.getChildren().add(gp2);
+        }else {
+            if(vBox.getChildren().size()>0)
+            vBox.getChildren().add(vBox.getChildren().size()-1,gp2);
+        }
+        //GridIfBlock.add(gp2, 0, 1, 2, 1);
+        vBox.setMargin(gp2, new Insets(10, 0, 10, 5));
+        //GridIfBlock.setMargin(gp2, new Insets(0, 0, 20, 5));
+
+        gp2.getRowConstraints().addAll(new RowConstraints());
+        gp2.getColumnConstraints().addAll(new ColumnConstraints(),
+                new ColumnConstraints(),
+                new ColumnConstraints(),
+                new ColumnConstraints(),
+                new ColumnConstraints()
+        );
+        Button button = new Button();
+
+        button.setOpacity(opacity);
+        button.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(ActionEvent event) {
-                button.setText("X");
-                button.setOnAction(removeAction);
-                AddThenBlock(vBox,null);
+            public void handle(MouseEvent event) {
+                button.setOpacity(1);
             }
         });
-    }else{
-        button.setText("add");
-        button.setOnAction(removeAction);
-
-    }
-
-
-
-    gp2.add(button,4,1);
-    //Label thenLab = new Label("THEN");
-    //thenLab.setPrefWidth(50);
-    //gp2.add(thenLab, 0, 0);
-
-    ComboBox<Pair<Character, String>> cb = new ComboBox();
-
-
-
-    ComboBox cb2 = new ComboBox();
-    cb2.getItems().addAll("=","+","-");
-    cb2.setValue("=");
-    ComboBox<Pair<Character, String>> cb3 = new ComboBox();
-    StringConverter stringConverter = new StringConverter<Pair<Character, String>>() {
-        @Override
-        public String toString(Pair<Character, String> user) {
-            if (user == null) {
-                return null;
-            } else {
-                return user.getValue();
+        button.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                button.setOpacity(opacity);
             }
-        }
+        });
 
-        @Override
-        public Pair<Character, String> fromString(String userId) {
-            return new Pair<>(null,userId);
-        }
-    };
-    Callback viewCellList = new Callback<ListView<Pair<Character, String>>, ListCell<Pair<Character, String>>>() {
-        @Override
-        public ListCell<Pair<Character, String>> call(ListView<Pair<Character, String>> param) {
 
-            return new ListCell<Pair<Character, String>>() {
+        EventHandler<ActionEvent> removeAction = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                vBox.getChildren().remove(gp2);
+
+            }
+        };
+
+        if (whatWillChange == null) {
+            button.setText("add");
+            button.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
-                protected void updateItem(Pair<Character, String> item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item == null || empty) {
-                        setText(null);
+                public void handle(ActionEvent event) {
+                    button.setText("X");
+                    button.setOnAction(removeAction);
+                    AddThenBlock(vBox, null,true);
+                }
+            });
+        } else {
+            button.setText("X");
+            button.setOnAction(removeAction);
+
+        }
+        gp2.add(button, 4, 1);
+        //Label thenLab = new Label("THEN");
+        //thenLab.setPrefWidth(50);
+        //gp2.add(thenLab, 0, 0);
+
+        ComboBox<Pair<Character, String>> cb = new ComboBox();
+
+
+        ComboBox cb2 = new ComboBox();
+
+        cb2.getItems().addAll("=", "+", "-");
+        cb2.setValue("=");
+        ComboBox<Pair<Character, String>> cb3 = new ComboBox();
+        StringConverter stringConverter = new StringConverter<Pair<Character, String>>() {
+            @Override
+            public String toString(Pair<Character, String> user) {
+                if (user == null) {
+                    return null;
+                } else {
+                    return user.getValue();
+                }
+            }
+
+            @Override
+            public Pair<Character, String> fromString(String userId) {
+                return new Pair<>(null, userId);
+            }
+        };
+        Callback viewCellList = new Callback<ListView<Pair<Character, String>>, ListCell<Pair<Character, String>>>() {
+            @Override
+            public ListCell<Pair<Character, String>> call(ListView<Pair<Character, String>> param) {
+
+                return new ListCell<Pair<Character, String>>() {
+                    @Override
+                    protected void updateItem(Pair<Character, String> item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setText(null);
+                        } else {
+                            setText(item.getValue());
+                        }
+                    }
+                };
+            }
+        };
+        cb.setConverter(stringConverter);
+        cb3.setConverter(stringConverter);
+        cb.setCellFactory(viewCellList);
+        cb3.setCellFactory(viewCellList);
+        cb.setEditable(true);
+
+        cb.setId("Combo1");
+        cb2.setId("Combo2");
+        cb3.setId("Combo3");
+
+        EventHandler<KeyEvent> OnKeyReleased = new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+
+                if (!event.getText().equals("")) {
+                    ComboBox comboBox = (ComboBox) event.getSource();
+                    System.out.println(comboBox.getSelectionModel().getSelectedIndex());
+                    if (comboBox.getEditor().getText().equals(comboBox.getValue())) {
+                        return;
+                    }
+
+                    List<Pair<Character, String>> list = Variables.instantiate().Find(comboBox.getEditor().getText());
+                    if (list != null) {
+                        comboBox.getItems().removeIf((item) -> {
+                            return !list.contains(item);
+                        });
+
+                        list.forEach((item) -> {
+                            if (!comboBox.getItems().contains(item)) {
+                                comboBox.getItems().add(item);
+                            }
+                        });
+                    }
+
+                    if (!comboBox.getItems().isEmpty()) {
+                        comboBox.show();
                     } else {
-                        setText(item.getValue());
+                        comboBox.hide();
                     }
                 }
-            };
-        }
-    };
-    cb.setConverter(stringConverter);
-    cb3.setConverter(stringConverter);
-    cb.setCellFactory(viewCellList);
-    cb3.setCellFactory(viewCellList);
-
-
-    cb.setEditable(true);
-    EventHandler<KeyEvent> OnKeyReleased = new EventHandler<KeyEvent>() {
-        @Override
-        public void handle(KeyEvent event) {
-
-            if (!event.getText().equals("")) {
-                ComboBox comboBox = (ComboBox) event.getSource();
-                System.out.println(comboBox.getSelectionModel().getSelectedIndex());
-                if (comboBox.getEditor().getText().equals(comboBox.getValue())) {
-                    return;
-                }
-
-                List<Pair<Character, String>> list = Variables.instantiate().Find(comboBox.getEditor().getText());
-                if(list!=null) {
-                    comboBox.getItems().removeIf((item) -> {
-                        return !list.contains(item);
-                    });
-
-                    list.forEach((item) -> {
-                        if (!comboBox.getItems().contains(item)) {
-                            comboBox.getItems().add(item);
-                        }
-                    });
-                }
-
-                if (!comboBox.getItems().isEmpty()) {
-                    comboBox.show();
-                } else {
-                    comboBox.hide();
-                }
             }
+        };
+        cb.setOnKeyReleased(OnKeyReleased);
+        cb3.setOnKeyReleased(OnKeyReleased);
+        cb3.setEditable(true);
+        cb.setPrefWidth(90);
+        gp2.add(cb, 1, 1);
+        gp2.add(cb2, 2, 1);
+        cb3.setPrefWidth(90);
+        gp2.add(cb3, 3, 1);
+
+
+
+                FillComboThen(cb,cb2,cb3,whatWillChange);
+
+//        if (whatWillChange != null) {
+//            String[] splittedWhatWillChange = whatHeppenedSplit(whatWillChange);
+//
+//            if (splittedWhatWillChange != null && splittedWhatWillChange[0] != null) {
+//                cb.setValue(new Pair<Character, String>(splittedWhatWillChange[0].charAt(0), splittedWhatWillChange[0]));
+//                if (splittedWhatWillChange[1] != null) {
+//
+//                    cb2.setValue(splittedWhatWillChange[1]);
+//                } else {
+//                    cb2.setDisable(true);
+//                }
+//                if (splittedWhatWillChange[2].indexOf("\"") == 0) {
+//                    cb3.getEditor().setText(splittedWhatWillChange[2]);
+//                    //setValue(new Pair<Character,String>('E',splittedWhatWillChange[2]));
+//                } else {
+//                    Integer num = ParseIf.tryParse(splittedWhatWillChange[2]);
+//                    if (num != null) {
+//                        cb3.getEditor().setText(String.valueOf(num));
+//                    } else {
+//                        cb3.setValue(new Pair<Character, String>(splittedWhatWillChange[2].charAt(0), splittedWhatWillChange[2]));
+//                    }
+//                }
+//            } else {
+//                System.out.println("Error when creating thenBlock content");
+//            }
+//
+//        }
+
+
+
+    }
+
+    public  void FillComboThen(ComboBox cb,ComboBox cb2,ComboBox cb3,String whatHeppened ){
+
+
+
+        if (whatHeppened != null) {
+            String[] splittedWhatWillChange = whatHeppenedSplit(whatHeppened);
+
+            if (splittedWhatWillChange != null && splittedWhatWillChange[0] != null) {
+                cb.setValue(new Pair<Character, String>(splittedWhatWillChange[0].charAt(0), splittedWhatWillChange[0]));
+               /* if (splittedWhatWillChange[1] != null) {
+
+                    cb2.setValue(splittedWhatWillChange[1]);
+                } else {
+
+                }*/
+                if (splittedWhatWillChange[2].indexOf("\"") == 0) {
+                    cb3.getEditor().setText(splittedWhatWillChange[2]);
+                    //setValue(new Pair<Character,String>('E',splittedWhatWillChange[2]));
+                } else {
+                    Integer num = ParseIf.tryParse(splittedWhatWillChange[2]);
+                    if (num != null) {
+                        cb3.getEditor().setText(String.valueOf(num));
+                    } else {
+                        cb3.setValue(new Pair<Character, String>(splittedWhatWillChange[2].charAt(0), splittedWhatWillChange[2]));
+                    }
+                }
+            } else {
+                System.out.println("Error when creating thenBlock content");
+            }
+
         }
-    };
-    cb.setOnKeyReleased(OnKeyReleased);
-    cb3.setOnKeyReleased(OnKeyReleased);
-    cb3.setEditable(true);
-    cb.setPrefWidth(90);
-    gp2.add(cb, 1, 1);
-    gp2.add(cb2, 2, 1);
-    cb3.setPrefWidth(90);
-    gp2.add(cb3, 3, 1);
-}
-
-
- public javafx.scene.control.TextArea getIfTrxtComponent(GridPane parent){
-     //TextField textField;
-
-     for(Node item:parent.getChildren()){
-         if(item.getId().equals("IF")){
-             return (javafx.scene.control.TextArea)item;
-         }
-     }
-      //  TextField textField=(TextField) gp.getChildren().get(1);
-
-        return  null;
     }
 
 
+    public void setIfTrxtComponent(GridPane parent, String setText) {
+        //TextField textField;
+        for (Node item : parent.getChildren()) {
+            if (item.getId()!=null && item.getId().equals("IF")) {
+                ((javafx.scene.control.TextArea) item).setText(setText);
+                return;
+            }
+        }      //  TextField textField=(TextField) gp.getChildren().get(1);
+    }
+
+    public String getIfTrxtComponent(GridPane parent) {
+        //TextField textField;
+        for (Node item : parent.getChildren()) {
+            if (item.getId()!=null && item.getId().equals("IF")) {
+                return  ((javafx.scene.control.TextArea) item).getText();
+            }
+        }      //  TextField textField=(TextField) gp.getChildren().get(1);
+        return null;
+    }
+
     public void CreateIFBlock(VBox vBoxParent, Pair<String, String> whatHappend) {
-        double opacity=0.3;
+        double opacity = 0.3;
         GridPane gp = new GridPane();
 
         gp.getRowConstraints().addAll(new RowConstraints(), new RowConstraints());
-        gp.getColumnConstraints().addAll(new ColumnConstraints(), new ColumnConstraints(),new ColumnConstraints());
+        gp.getColumnConstraints().addAll(new ColumnConstraints(), new ColumnConstraints(), new ColumnConstraints());
         //FlowPane flowP=new FlowPane();
         Label labIF = new Label("IF");
-        labIF.setPrefWidth(50);
+        labIF.setPrefWidth(10);
         labIF.setAlignment(Pos.TOP_LEFT);
         javafx.scene.control.TextArea textArea = new javafx.scene.control.TextArea();
         textArea.setId("IF");
         textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode()==KeyCode.ENTER){
+                if (event.getCode() == KeyCode.ENTER) {
 
                 }
             }
@@ -422,10 +545,11 @@ button.setOpacity(opacity);
         textArea.setPrefHeight(60);
         gp.add(textArea, 1, 0);
         gp.add(labIF, 0, 0);
-        VBox vBox=new VBox();
-        gp.add(vBox,1,1);
-        Button button=new Button();
-        gp.add(button,2,0);
+        VBox vBox = new VBox();
+        vBox.setId("Then");
+        gp.add(vBox, 1, 1);
+        Button button = new Button();
+        gp.add(button, 2, 0);
         button.setOpacity(opacity);
         button.setText("X");
         button.setOnAction(new EventHandler<ActionEvent>() {
@@ -449,31 +573,103 @@ button.setOpacity(opacity);
         });
 
 
-        if(whatHappend!=null){
+        if (whatHappend != null) {
             textArea.setText(whatHappend.getKey());
-            разделить "что случится" и поместить в текстовые поля
-            String[] recHeppend= whatHappend.getValue().split();
-            for(int i=0; i<recHeppend.length;i++){
-                AddThenBlock(vBox,recHeppend[i]);
+            //разделить "что случится" и поместить в текстовые поля
+            String[] recHeppend = whatHappend.getValue().split(";");
+            for (int i = 0; i < recHeppend.length; i++) {
+                AddThenBlock(vBox, recHeppend[i],true);
             }
         }
-            AddThenBlock(vBox,null);
-
+        AddThenBlock(vBox, null,true);
 
 
         //gp.add(flowP,0,0);
         // flowP.getChildren().addAll(labIF,new Label("( "),new Label(" )"));
-        vBoxParent.getChildren().add(vBoxParent.getChildren().size()-1,gp);
+
+        vBoxParent.getChildren().add(vBoxParent.getChildren().size() - SkipifContent, gp);//2 button exist
         //return gp;
     }
 
 
+    public ComboBox[] GetComboRec(GridPane parent){
+        ComboBox[] ret=new ComboBox[3];
+        for (Node item:parent.getChildren()){
+            if(item.getId()!=null && item.getId().equals("Combo1")){
+                ret[0]=(ComboBox)item;
+            }
+            if(item.getId()!=null && item.getId().equals("Combo2")){
+                ret[1]=(ComboBox)item;
+            }
+            if(item.getId()!=null && item.getId().equals("Combo3")){
+                ret[2]=(ComboBox)item;
+            }
+        }
+        return  ret;
+    }
 
 
-    public Button CreateButtonOfChoice(VBox parent, String name){
-        Button button=new Button(name);
+    public void FillThenBlock(GridPane parent,String allChange) {
+        ComboBox[] cb=new ComboBox[3];
+        String[] shortChanged=allChange.split(";");
+                //whatHeppenedSplit(allChange);
+
+        for (Node item : parent.getChildren()) {
+            if (item.getId()!=null && item.getId().equals("Then")) {
+                VBox parentRecords=(VBox) item;
+                int howWasRecord=parentRecords.getChildren().size()-1;
+                int sub=howWasRecord-shortChanged.length;
+                if(sub>0){
+                    parentRecords.getChildren().remove(0,sub);
+                    howWasRecord=parentRecords.getChildren().size()-1;
+                }else{
+                    if(sub<0){
+                        sub*=-1;
+                        for(int i=0; i<sub;i++){
+                            AddThenBlock(parentRecords,shortChanged[i+howWasRecord],false);
+                        }
+                    }
+                }
+                Node grid;
+                for(int i=0; i<howWasRecord;i++){
+                    grid=parentRecords.getChildren().get(i);
+                    if(grid.getClass()==GridPane.class){
+
+                       /* for(Node combo:((GridPane)grid).getChildren()){
+                            if(combo.getId()!=null){
+                            if(combo.getId().equals("Combo1")){
+                                cb[0]=(ComboBox) combo;
+                            }else
+                            if(combo.getId().equals("Combo2")){
+                                cb[1]=(ComboBox) combo;
+                            }else if(combo.getId().equals("Combo3")){
+                                cb[2]=(ComboBox) combo;
+                            }
+                            }
+                        }*/
+
+                        cb= GetComboRec((GridPane)grid);
+
+                        for(int j=0; j<cb.length;j++){
+                            if(cb[j]==null){
+                                System.out.println("Not found Combo"+(j+1));
+                                return;
+                            }
+                        }
+
+                        //Крэшится когда переключаешь больший Then в Меньший
+                        FillComboThen(cb[0],cb[1],cb[2],shortChanged[i]);
+                    }
+                }
+            }
+        }
+    }
+
+
+    public Button CreateButtonOfChoice(VBox parent, String name) {
+        Button button = new Button(name);
 
         parent.getChildren().add(button);
-        return  button;
+        return button;
     }
 }

@@ -111,7 +111,17 @@
                     <ScrollPane minHeight="0.0" minWidth="0.0" prefHeight="96.0" prefWidth="130.0">
                         <VBox fx:id="iFContent">
                             <children>
-                                <Button alignment="TOP_CENTER" fx:id="createBlockIf" onAction="#CreateBlockIf" text="Add new if" />
+                                <GridPane hgap="10" vgap="10">
+                                    <columnConstraints>
+                                        <ColumnConstraints />
+                                        <ColumnConstraints/>
+                                    </columnConstraints>
+                                    <Button  GridPane.columnIndex="0" alignment="TOP_CENTER" fx:id="createBlockIf" onAction="#CreateBlockIf" text="Add new if" >
+
+                                            </Button>
+                                    <Button GridPane.columnIndex="1" alignment="TOP_CENTER" fx:id="Save"  text="Check and save" />
+                                </GridPane>
+
                             </children>
                             <padding>
                                 <Insets bottom="10" left="15" right="15" top="10" />
