@@ -46,7 +46,8 @@ public class StructGame {
         Object insertedVal=null;
         while ((posStart=sb.indexOf("["))!=-1){
             posEnd=sb.indexOf("]",posStart);
-         insertedVal= ParseIf.GetValueVariable(sb.substring(posStart,posEnd));
+            insertedVal=Variables.instantiate().GetValue(sb.substring(posStart,posEnd));
+            //insertedVal= ParseIf.GetValueVariable(sb.substring(posStart,posEnd));
            sb=sb.replace(posStart-1,posEnd+1,insertedVal.toString());
         }
         return sb.toString();

@@ -1,8 +1,10 @@
 package main.java; /**
  * Created by arsen on 15.08.2016.
  */
+
 import javafx.beans.binding.StringBinding;
 import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
@@ -12,117 +14,101 @@ public class ButtonGame {
     public boolean enable;
     //public  boolean textBlock;
     public String ifButtonExist;
-    public List<Pair<String,String>> whatHappend;
+    public List<IfThen> whatHappend;
+    //public List<Pair<String,String>> whatHappend;
     public String text;
 
 
+    //new method
 
- private    void SetHashTable(String var,Object val){
-        char type=var.charAt(0);
-        String key=var.substring(1,var.length());
-        switch (type) {
-            case 'T':
 
-                 Variables.instantiate().things.put(key,(Integer)val);
-                break;
+    //--ne method
 
-            case 'U':
-                 Variables.instantiate().userVariable.put(key,val.toString());
-                break;
 
-            case 'P':
-                 Variables.instantiate().people.put(key,(Integer) val);
-                break;
-            case 'C':
-                 Variables.instantiate().character.put(key,(Integer)val);
-                break;
+    private void SetHashTable(String key, String value) {
+
+        Triple tripe;
+        for (int i = 0; i < Variables.instantiate().variable.size(); i++) {
+            tripe = Variables.instantiate().variable.get(i);
+            if (tripe.getKey().equals(key)) {
+                tripe.setValue(value);
+            }
         }
+
     }
 
- private    void changeVariables(String[] var){
 
-        Object operand,operand2;
-        String key;
-        if(var[0].indexOf('[')!=-1){
-            operand= ParseIf.GetValueVariable(var[0]=var[0].substring(1,var[0].length()-1));
-            if(var[2].indexOf('[')!=-1){
-                operand2= ParseIf.GetValueVariable(var[2]=var[2].substring(1,var[2].length()-1));
-            }else if(var[2].indexOf('\"')!=-1){
-                operand2=var[2].substring(1,var[2].length()-1);
-            }else{
-                operand2=ParseIf.tryParse(var[2]);
-            }
+   /* private void changeVariables(String var1,String operand, String var3) {
 
-            if(operand2==null){
-                System.out.println("Error operand2");
-                return;
-            }
+        //Object operand, operand2;
 
-            switch (var[1]){
+
+
+            switch (operand) {
                 case "+":
-                    if(operand instanceof String){
-                        operand=((String)operand).concat((String)operand2);
-                    }else{
-                        operand=(Integer)operand+(Integer)operand2;
+                    if (var1 instanceof String) {
+                        operand = ((String) operand).concat((String) operand2);
+                    } else {
+                        operand = (Integer) operand + (Integer) operand2;
                     }
-                    SetHashTable(var[0],operand);
+                    SetHashTable(var[0], operand);
                     break;
                 case "-":
-                    if(operand instanceof String){
-                        operand= ((String) operand).replaceAll((String)operand2,"");
-                    }else{
-                        operand=(Integer)operand-(Integer)operand2;
+                    if (operand instanceof String) {
+                        operand = ((String) operand).replaceAll((String) operand2, "");
+                    } else {
+                        operand = (Integer) operand - (Integer) operand2;
                     }
-                    SetHashTable(var[0],operand);
+                    SetHashTable(var[0], operand);
                     break;
                 case "=":
-                    SetHashTable(var[0],operand2);
+                    SetHashTable(var[0], operand2);
                     break;
             }
 
 
-        }else {
-            switch (var[0]){
+        } else {
+            switch (var[0]) {
                 case "move":
-                    System.out.println("Go to "+var[1]);
+                    System.out.println("Go to " + var[1]);
                     break;
                 case "show":
-                    System.out.println("Save value to "+var[1]);
+                    System.out.println("Save value to " + var[1]);
                     break;
                 case "hight":
-                    System.out.println("Hight button "+var[1]);
+                    System.out.println("Hight button " + var[1]);
                     break;
 
 
             }
         }
-    }
+    }*/
 
-  public   void HappendParse(String StrHappend){
-        String rex="(?:(move)(\\d+)|(\\[.*?\\])([+-=])(-?\\d+|\".*?\"|\\[.*?\\])|(show)\\[(.*?)\\]|(hight)(\\d+))";
-        Pattern patern=Pattern.compile(rex);
-        Matcher matcher=patern.matcher(StrHappend);
-        String[] var=new String[3];
-        int index=0;
-        while (matcher.find()){
+   /* public void HappendParse(String StrHappend) {
+        String rex = "(?:(move)(\\d+)|(\\[.*?\\])([+-=])(-?\\d+|\".*?\"|\\[.*?\\])|(show)\\[(.*?)\\]|(hight)(\\d+))";
+        Pattern patern = Pattern.compile(rex);
+        Matcher matcher = patern.matcher(StrHappend);
+        String[] var = new String[3];
+        int index = 0;
+        while (matcher.find()) {
             System.out.println(matcher.group());
-            for (int i=1; i<=matcher.groupCount();i++){
-                if(matcher.group(i)!=null){
-                    var[index]=matcher.group(i);
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                if (matcher.group(i) != null) {
+                    var[index] = matcher.group(i);
                     index++;
                 }
             }
             changeVariables(var);
-            var[2]="";
-            index=0;
+            var[2] = "";
+            index = 0;
         }
-    }
+    }*/
 
 
- public    ButtonGame(String text){
-     enable=true;
-     this.text=text;
-    // textBlock=false;
-     whatHappend=new ArrayList<>();
+    public ButtonGame(String text) {
+        enable = true;
+        this.text = text;
+        // textBlock=false;
+        whatHappend = new ArrayList<>();
     }
 }

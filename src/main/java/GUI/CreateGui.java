@@ -4,7 +4,9 @@ import java.awt.ScrollPane;
 import java.awt.event.*;
 
 
+import com.sun.org.apache.xml.internal.utils.Trie;
 import com.sun.org.apache.xpath.internal.operations.Gt;
+import com.sun.org.apache.xpath.internal.operations.Variable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -28,9 +30,7 @@ import javafx.scene.layout.*;
 import javafx.util.Callback;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
-import main.java.ButtonGame;
-import main.java.ParseIf;
-import main.java.Variables;
+import main.java.*;
 import org.omg.CORBA.Object;
 import sun.nio.cs.CharsetMapping;
 
@@ -51,16 +51,19 @@ public class CreateGui {
 
 
 
-    public void TestCreateContentAccordion(Accordion accordion, List<Pair<String, Map>> listTitle) {
+    public void TestCreateContentAccordion(Accordion accordion) {
 
-        Variables.instantiate().things.put("Стол", 1);
-        Variables.instantiate().things.put("Стул", 1);
-        Variables.instantiate().things.put("Палка", 1);
-        Variables.instantiate().things.put("Камень", 1);
-        Variables.instantiate().things.put("Деньги", 15);
-        Variables.instantiate().people.put("Иван", 0);
-        Variables.instantiate().userVariable.put("погода", "Зима");
-        CreateContentAccordion(accordion, listTitle);
+        Variables.instantiate().variable.add(new Triple("Стол","1", Variables.categories.things));
+        Variables.instantiate().variable.add(new Triple("Стул","1", Variables.categories.things));
+        Variables.instantiate().variable.add(new Triple("Палка","1", Variables.categories.things));
+        Variables.instantiate().variable.add(new Triple("Камень","1", Variables.categories.things));
+        Variables.instantiate().variable.add(new Triple("Деньги","15", Variables.categories.things));
+        Variables.instantiate().variable.add(new Triple("Деньги","15", Variables.categories.things));
+        Variables.instantiate().variable.add(new Triple("Деньги","15", Variables.categories.people));
+        Variables.instantiate().variable.add(new Triple("Погода","\"Зима\"", Variables.categories.userVariable));
+
+
+        CreateContentAccordion(accordion);
 
     }
 
@@ -198,7 +201,7 @@ public class CreateGui {
     }
 
 
-    public void CreateContentAccordion(Accordion accordion, List<Pair<String, Map>> listTitle) {
+    public void CreateContentAccordion(Accordion accordion) {
 
 
         VBox vBox;
@@ -206,10 +209,47 @@ public class CreateGui {
         TextField textField;
         GridPane gp;
         javafx.scene.control.ScrollPane scrollPane;
-        if (listTitle == null) {
-            return;
+
+        for ( Map.Entry<Variables.categories, String> items :Variables.instantiate().titleName.entrySet()){
+            scrollPane = new javafx.scene.control.ScrollPane();
+
+            vBox = new VBox();
+            //vBox.setUserData(items.getValue());
+
+            scrollPane.setContent(vBox);
+
+            List<Triple> triples;
+            //for(Variables.categories categories:Variables.categories.values()){
+                triples=Variables.instantiate().GetCategories(items.getKey());
+
+                for (Triple item:triples){
+                    AddNewEmptyVariable(vBox, item.getKey(), item.getValue());
+                }
+                AddNewEmptyVariable(vBox, null, null);
+                accordion.getPanes().add(new TitledPane(items.getValue(), scrollPane));
+            //}
+
+
+
+
+         /*   for (java.lang.Object item : items.getValue().entrySet()) {
+
+
+//                gp=new GridPane();
+//                gp.getColumnConstraints().addAll(new ColumnConstraints(),new ColumnConstraints());
+//                textField=new TextField(((Map.Entry)item).getKey() .toString());
+//                gp.add(textField,0,0);
+//                textField=new TextField(((Map.Entry)item).getValue().toString());
+//                //textField.setEditable(false);
+//                gp.add(textField,1,0);
+//                vBox.getChildren().add(gp);
+            }
+            AddNewEmptyVariable(vBox, null, null);
+            accordion.getPanes().add(new TitledPane(items.getValue(), scrollPane));
         }
-        for (int i = 0; i < listTitle.size(); i++) {
+*/
+
+     /*   for (int i = 0; i < Variables.instantiate().titleName.size(); i++) {
             scrollPane = new javafx.scene.control.ScrollPane();
 
             vBox = new VBox();
@@ -229,9 +269,9 @@ public class CreateGui {
             }
             AddNewEmptyVariable(vBox, null, null);
             accordion.getPanes().add(new TitledPane(listTitle.get(i).getKey(), scrollPane));
-        }
+        }*/
 
-    }
+    }}
 
 
     public String[] whatHeppenedSplit(String s) {
@@ -274,7 +314,7 @@ public class CreateGui {
     }
 
 
-    public void AddThenBlock(VBox vBox, String whatWillChange,boolean last) {
+    public void AddThenBlock(VBox vBox, Then whatWillChange,boolean last) {
         double opacity = 0.3;
         GridPane gp2 = new GridPane();
         if(last){
@@ -339,36 +379,36 @@ public class CreateGui {
         //thenLab.setPrefWidth(50);
         //gp2.add(thenLab, 0, 0);
 
-        ComboBox<Pair<Character, String>> cb = new ComboBox();
+        ComboBox<Triple> cb = new ComboBox();
 
 
         ComboBox cb2 = new ComboBox();
 
         cb2.getItems().addAll("=", "+", "-");
         cb2.setValue("=");
-        ComboBox<Pair<Character, String>> cb3 = new ComboBox();
-        StringConverter stringConverter = new StringConverter<Pair<Character, String>>() {
+        ComboBox<Triple> cb3 = new ComboBox();
+        StringConverter stringConverter = new StringConverter<Triple>() {
             @Override
-            public String toString(Pair<Character, String> user) {
+            public String toString(Triple user) {
                 if (user == null) {
                     return null;
                 } else {
-                    return user.getValue();
+                    return user.getKey();
                 }
             }
 
             @Override
-            public Pair<Character, String> fromString(String userId) {
-                return new Pair<>(null, userId);
+            public Triple fromString(String userId) {
+                return new Triple(null,null,null);
             }
         };
-        Callback viewCellList = new Callback<ListView<Pair<Character, String>>, ListCell<Pair<Character, String>>>() {
+        Callback viewCellList = new Callback<ListView<Triple>, ListCell<Triple>>() {
             @Override
-            public ListCell<Pair<Character, String>> call(ListView<Pair<Character, String>> param) {
+            public ListCell<Triple> call(ListView<Triple> param) {
 
-                return new ListCell<Pair<Character, String>>() {
+                return new ListCell<Triple>() {
                     @Override
-                    protected void updateItem(Pair<Character, String> item, boolean empty) {
+                    protected void updateItem(Triple item, boolean empty) {
                         super.updateItem(item, empty);
                         if (item == null || empty) {
                             setText(null);
@@ -400,7 +440,7 @@ public class CreateGui {
                         return;
                     }
 
-                    List<Pair<Character, String>> list = Variables.instantiate().Find(comboBox.getEditor().getText());
+                    List<Triple> list = Variables.instantiate().Find(comboBox.getEditor().getText());
                     if (list != null) {
                         comboBox.getItems().removeIf((item) -> {
                             return !list.contains(item);
@@ -466,22 +506,28 @@ public class CreateGui {
 
     }
 
-    public  void FillComboThen(ComboBox cb,ComboBox cb2,ComboBox cb3,String whatHeppened ){
+    public  void FillComboThen(ComboBox cb,ComboBox cb2,ComboBox cb3,Then whatHeppened ){
 
 
 
         if (whatHeppened != null) {
-            String[] splittedWhatWillChange = whatHeppenedSplit(whatHeppened);
+           // String[] splittedWhatWillChange = whatHeppenedSplit(whatHeppened);
 
-            if (splittedWhatWillChange != null && splittedWhatWillChange[0] != null) {
-                cb.setValue(new Pair<Character, String>(splittedWhatWillChange[0].charAt(0), splittedWhatWillChange[0]));
+            if (whatHeppened != null && whatHeppened.getVariable1() != null && whatHeppened.getVariable2()!=null) {
+                cb.setValue(whatHeppened.getVariable1());
+                cb3.setValue(whatHeppened.getVariable2());
+                //cb.setValue(new Pair<Character, String>(whatHeppened.getVariable1().getKey(),whatHeppened.getVariable1().getValue()));
+                //cb3.setValue(new Pair<Character, String>(whatHeppened.getVariable2().getKey(),whatHeppened.getVariable2().getValue()));
+                if(whatHeppened.getOperator()==null){
+                    cb2.setValue("=");
+                }
                /* if (splittedWhatWillChange[1] != null) {
 
                     cb2.setValue(splittedWhatWillChange[1]);
                 } else {
 
                 }*/
-                if (splittedWhatWillChange[2].indexOf("\"") == 0) {
+              /*  if (splittedWhatWillChange[2].indexOf("\"") == 0) {
                     cb3.getEditor().setText(splittedWhatWillChange[2]);
                     //setValue(new Pair<Character,String>('E',splittedWhatWillChange[2]));
                 } else {
@@ -491,7 +537,7 @@ public class CreateGui {
                     } else {
                         cb3.setValue(new Pair<Character, String>(splittedWhatWillChange[2].charAt(0), splittedWhatWillChange[2]));
                     }
-                }
+                }*/
             } else {
                 System.out.println("Error when creating thenBlock content");
             }
@@ -520,7 +566,7 @@ public class CreateGui {
         return null;
     }
 
-    public void CreateIFBlock(VBox vBoxParent, Pair<String, String> whatHappend) {
+    public void CreateIFBlock(VBox vBoxParent, IfThen whatHappend) {
         double opacity = 0.3;
         GridPane gp = new GridPane();
 
@@ -574,11 +620,11 @@ public class CreateGui {
 
 
         if (whatHappend != null) {
-            textArea.setText(whatHappend.getKey());
+            textArea.setText(whatHappend.getIfString());
             //разделить "что случится" и поместить в текстовые поля
-            String[] recHeppend = whatHappend.getValue().split(";");
-            for (int i = 0; i < recHeppend.length; i++) {
-                AddThenBlock(vBox, recHeppend[i],true);
+        //    String[] recHeppend = whatHappend.getValue().split(";");
+            for (int i = 0; i < whatHappend.getThenList().size(); i++) {
+                AddThenBlock(vBox, whatHappend.getThenList().get(i),true);
             }
         }
         AddThenBlock(vBox, null,true);
@@ -609,16 +655,16 @@ public class CreateGui {
     }
 
 
-    public void FillThenBlock(GridPane parent,String allChange) {
+    public void FillThenBlock(GridPane parent,List<Then> allChange) {
         ComboBox[] cb=new ComboBox[3];
-        String[] shortChanged=allChange.split(";");
+     //   String[] shortChanged=allChange.split(";");
                 //whatHeppenedSplit(allChange);
 
         for (Node item : parent.getChildren()) {
             if (item.getId()!=null && item.getId().equals("Then")) {
                 VBox parentRecords=(VBox) item;
                 int howWasRecord=parentRecords.getChildren().size()-1;
-                int sub=howWasRecord-shortChanged.length;
+                int sub=howWasRecord-allChange.size();
                 if(sub>0){
                     parentRecords.getChildren().remove(0,sub);
                     howWasRecord=parentRecords.getChildren().size()-1;
@@ -626,7 +672,7 @@ public class CreateGui {
                     if(sub<0){
                         sub*=-1;
                         for(int i=0; i<sub;i++){
-                            AddThenBlock(parentRecords,shortChanged[i+howWasRecord],false);
+                            AddThenBlock(parentRecords,allChange.get(i+howWasRecord),false);
                         }
                     }
                 }
@@ -658,7 +704,7 @@ public class CreateGui {
                         }
 
                         //Крэшится когда переключаешь больший Then в Меньший
-                        FillComboThen(cb[0],cb[1],cb[2],shortChanged[i]);
+                        FillComboThen(cb[0],cb[1],cb[2],allChange.get(i));
                     }
                 }
             }

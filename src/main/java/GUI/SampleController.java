@@ -64,8 +64,19 @@ public class SampleController {
         StructGame structGame = new StructGame();
         structGame.id = 1;
         ButtonGame buttonGame=new ButtonGame("Первая кнопка");
-        buttonGame.whatHappend.add(new Pair<>("([TСтол]>5&[UПогода]=\"погода\")","[TСтол]+1;[UПогода]=\"Лето\""));
-        buttonGame.whatHappend.add(new Pair<>("([TСтол]>5&[UПогода]=\"погода\")","[TСтол]+1;[UПогода]=\"Лето\";move1"));
+
+
+
+
+
+
+        List<Then> thenList=new ArrayList<>();
+        thenList.add(   new Then("Стол","+","1"));
+        thenList.add(   new Then("Погода","=","\"погода\""));
+        buttonGame.whatHappend.add(new IfThen("([Стол]>5&[Погода]=\"погода\")",thenList));
+
+        //new Pair<>("([TСтол]>5&[UПогода]=\"погода\")","[TСтол]+1;[UПогода]=\"Лето\""));
+      //  buttonGame.whatHappend.add(new Pair<>("([TСтол]>5&[UПогода]=\"погода\")","[TСтол]+1;[UПогода]=\"Лето\";move1"));
         structGame.buttons.add(buttonGame);
         buttonGame=new ButtonGame("Вторая кнопка");
         structGame.buttons.add(buttonGame);
@@ -74,10 +85,18 @@ public class SampleController {
         structGame=new StructGame();
         structGame.id=2;
         buttonGame=new ButtonGame("2.1");
-        buttonGame.whatHappend.add(new Pair<>("IfIfIf","[TСтол]-1"));
+        thenList=new ArrayList<>();
+        thenList.add(new Then("Стол","-","1"));
+        buttonGame.whatHappend.add(new IfThen("IfIfIf",thenList));
+
+
         structGame.buttons.add(buttonGame);
         buttonGame=new ButtonGame("2.2");
-        buttonGame.whatHappend.add(new Pair<>("2.2","[TСтол]=3;[TСтул]=0"));
+        thenList=new ArrayList<>();
+        thenList.add(new Then("Стол","=","3"));
+        thenList.add(new Then("Стул","=","0"));
+        buttonGame.whatHappend.add(new IfThen("2.2",thenList));
+
         structGame.buttons.add(buttonGame);
         game.structGames.add(structGame);
 
@@ -217,8 +236,8 @@ public class SampleController {
                 System.out.println("Field must not be empty");
                 continue;
             };
-            if(Variables.instantiate().Find(cb[0].getEditor().getText()).size()>0){
-                проверки на валидность if-then блоков
+            if(Variables.instantiate().Find(cb[0].getEditor().getText()).size()==0){
+                System.out.println("UserMessage: variable "+cb[0].getEditor().getText()+" not found");
             }
 
         }
@@ -240,7 +259,7 @@ public class SampleController {
 
         System.out.println("button "+buttonSize+" contentSize "+contentSize);
         int countAdd=0;
-        if(contentSize-1-buttonSize>0){
+        if(contentSize-1-buttonSize>=0){
             iFContent.getChildren().remove(buttonSize,contentSize);
             contentSize=iFContent.getChildren().size()-skipifContent;
         }else if(contentSize-1<buttonSize){ //Если нехватает блоков то создаём и сразу заполняем
@@ -255,8 +274,9 @@ public class SampleController {
             for (int i = 0; i < iFContent.getChildren().size() - 1-countAdd; i++) {
                 node = iFContent.getChildren().get(i);
                 if (node.getClass() == GridPane.class) {
-                    createGui.setIfTrxtComponent((GridPane) node,buttonGame.whatHappend.get(i).getKey());
-                    createGui.FillThenBlock((GridPane)node,buttonGame.whatHappend.get(i).getValue());
+                    int sizewhatHappened=buttonGame.whatHappend.size();
+                    createGui.setIfTrxtComponent((GridPane) node,buttonGame.whatHappend.get(i).getIfString());
+                    createGui.FillThenBlock((GridPane)node,buttonGame.whatHappend.get(i).getThenList());
 
                 }
             }
@@ -281,6 +301,8 @@ public class SampleController {
 
     private void GuiInit() {
 
+
+        createGui.TestCreateContentAccordion(listVariable);
         addButtonChoice.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -371,14 +393,15 @@ public class SampleController {
 
     private void Initial() {
         listTitle = new ArrayList<>();
-        ObservableMap observableMap = FXCollections.observableMap(Variables.instantiate().things);
-        listTitle.add(new Pair<String, Map>("Вещи", observableMap));
-        observableMap = FXCollections.observableMap(Variables.instantiate().character);
-        listTitle.add(new Pair<String, Map>("Характеристики", observableMap));
-        observableMap = FXCollections.observableMap(Variables.instantiate().people);
-        listTitle.add(new Pair<String, Map>("Люди", observableMap));
-        observableMap = FXCollections.observableMap(Variables.instantiate().userVariable);
-        listTitle.add(new Pair<String, Map>("Пользовательские", observableMap));
+        ObservableList<Triple> observableMap = FXCollections.observableList(Variables.instantiate().variable);
+
+//        listTitle.add(new Pair<String, Map>("Вещи", observableMap));
+//        observableMap = FXCollections.observableMap(Variables.instantiate().character);
+//        listTitle.add(new Pair<String, Map>("Характеристики", observableMap));
+//        observableMap = FXCollections.observableMap(Variables.instantiate().people);
+//        listTitle.add(new Pair<String, Map>("Люди", observableMap));
+//        observableMap = FXCollections.observableMap(Variables.instantiate().userVariable);
+//        listTitle.add(new Pair<String, Map>("Пользовательские", observableMap));
 
 
         createGui = new CreateGui();
@@ -410,7 +433,7 @@ public class SampleController {
     }
 
     public void FillVariable() {
-        createGui.TestCreateContentAccordion(listVariable, listTitle);
+        createGui.TestCreateContentAccordion(listVariable);
     }
 
     public void onTextChange() {

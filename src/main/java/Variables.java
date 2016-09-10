@@ -3,20 +3,27 @@ package main.java;
 import javafx.util.Pair;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by arsen on 15.08.2016.
  */
 public class Variables implements Serializable {
-    public Map<String, Integer> things;
-    public Map<String, String> userVariable;
-    public Map<String, Integer> character;
-    public Map<String, Integer> people;
+
+    public List<Triple> variable;
+    //    public Map<String, Integer> things;
+//    public Map<String, String> userVariable;
+//    public Map<String, Integer> character;
+//    public Map<String, Integer> people;
     private transient static Variables inst;
+    public Map<categories, String> titleName;
+
+    public static enum categories {things, character, people, userVariable}
+
+
+    public String GetTitleName(categories index) {
+        return titleName.get(index);
+    }
 
     /*
         public void addThing(String key,Integer value){
@@ -43,6 +50,19 @@ public class Variables implements Serializable {
             return people.get(key);
         }
     */
+
+    public List<Triple> GetCategories(categories categ){
+        List<Triple> l=new ArrayList<>();
+
+        Variables.instantiate().variable.forEach(triple -> {
+            if(triple.getIndex()==categ){
+                l.add(triple);
+            }
+        });
+
+        return l;
+    }
+
     public static Variables instantiate() {
         if (inst == null) {
             inst = new Variables();
@@ -60,35 +80,58 @@ public class Variables implements Serializable {
 
 
     private Variables() {
-        things = new Hashtable<>();
-        userVariable = new Hashtable<>();
-        character = new Hashtable<>();
-        people = new Hashtable<>();
+        variable = new ArrayList<Triple>();
+        titleName = new Hashtable<>();
+        titleName.put(categories.things, "Вещи");
+        titleName.put(categories.character, "Характеристики");
+        titleName.put(categories.people, "Люди");
+        titleName.put(categories.userVariable, "Пользовательские");
     }
 
-    public List<Pair<Character,String>> Find(String key) {
-        if(key==null || key.isEmpty()){
-            return  null;
+    ;
+
+
+    public  String GetValue(String key) {
+        for (Triple items : variable) {
+            if (items.getKey().equals(key)) {
+                return items.getValue();
+            }
         }
-        List<Pair<Character,String>> l = new ArrayList();
+        ;
+        return null;
+    }
+//        things = new Hashtable<>();
+//        userVariable = new Hashtable<>();
+//        character = new Hashtable<>();
+//        people = new Hashtable<>();
 
-        List<Pair<Character,Map>>  mapArr = new ArrayList<>();
 
-        mapArr.add(new Pair('T',things));
-        mapArr.add(new Pair('U',userVariable));
-        mapArr.add(new Pair('C',character));
-        mapArr.add(new Pair('P',people));
+    public  Triple GetFirst(String key){
+        List<Triple> list=Find(key);
+        if(list!=null && list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
+
+    public List<Triple> Find(String key) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
+        List<Triple> l = new ArrayList();
+
+        //List<Pair<Character,Map>>  mapArr = new ArrayList<>();
+
+//        mapArr.add(new Pair('T',things));
+//        mapArr.add(new Pair('U',userVariable));
+//        mapArr.add(new Pair('C',character));
+//        mapArr.add(new Pair('P',people));
 
         String s;
-        for (Pair<Character,Map> items : mapArr) {
-            for (java.lang.Object item : items.getValue().entrySet()) {
-                {
-                    if (((Map.Entry) item).getKey().toString().contains(key)) {
-                        s=((Map.Entry) item).getKey().toString();
-
-                        l.add(new Pair(items.getKey(),s));
-                    }
-                }
+        for (Triple items : variable) {
+            if (items.getKey().toString().contains(key)) {
+                //  s=((Map.Entry) item).getKey().toString();
+                l.add(items);
             }
         }
         return l;
