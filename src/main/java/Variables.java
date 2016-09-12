@@ -11,45 +11,27 @@ import java.util.*;
 public class Variables implements Serializable {
 
     public List<Triple> variable;
-    //    public Map<String, Integer> things;
-//    public Map<String, String> userVariable;
-//    public Map<String, Integer> character;
-//    public Map<String, Integer> people;
-    private transient static Variables inst;
+        private transient static Variables inst;
     public Map<categories, String> titleName;
 
-    public static enum categories {things, character, people, userVariable}
+    public static enum categories {things, character, people, userVariable,constant}
 
+
+    public boolean IsConstWords(String string){
+        String[] options = {"move", "hight", "show"};
+        String sbuf = string.toLowerCase();
+        for (String item : options) {
+            if (sbuf.equals(item)) {
+                return true;
+
+            }
+        }
+        return  false;
+    }
 
     public String GetTitleName(categories index) {
         return titleName.get(index);
     }
-
-    /*
-        public void addThing(String key,Integer value){
-            things.put(key,value);
-        }
-        public void addVariable(String key,String value){
-            userVariable.put(key,value);
-        }
-        public void addCharacter(String key,Integer value){
-            character.put(key,value);
-        }
-
-
-        public int findInThings(String key){
-            return things.get(key);
-        }
-        public String findInVariables(String key){
-            return userVariable.get(key);
-        }
-        public Integer findInCharacters(String key){
-            return character.get(key);
-        }
-        public Integer findInPeopls(String key){
-            return people.get(key);
-        }
-    */
 
     public List<Triple> GetCategories(categories categ){
         List<Triple> l=new ArrayList<>();
@@ -120,12 +102,6 @@ public class Variables implements Serializable {
         }
         List<Triple> l = new ArrayList();
 
-        //List<Pair<Character,Map>>  mapArr = new ArrayList<>();
-
-//        mapArr.add(new Pair('T',things));
-//        mapArr.add(new Pair('U',userVariable));
-//        mapArr.add(new Pair('C',character));
-//        mapArr.add(new Pair('P',people));
 
         String s;
         for (Triple items : variable) {
@@ -136,40 +112,5 @@ public class Variables implements Serializable {
         }
         return l;
     }
-//    public   Variables Read(String name){
-//        FileInputStream fis;
-//        ObjectInputStream ois;
-//        try{
-//            fis=new FileInputStream(new File(name));
-//            ois=new ObjectInputStream(fis);
-//            return  (Variables)ois.readObject();
-//        }catch (FileNotFoundException e){
-//
-//        }catch (IOException e){
-//
-//        }catch (ClassNotFoundException e){
-//
-//        }
-//        return  null;
-//
-//    }
-//
-//
-//
-//    public  void Write(String name,Variables var){
-//        if(var==null){
-//            return;
-//        }
-//        FileOutputStream fos;
-//        ObjectOutputStream oos;
-//        try {
-//            fos=new FileOutputStream(new File(name));
-//            oos=new ObjectOutputStream(fos);
-//            oos.writeObject(var);
-//        }catch (FileNotFoundException e){
-//            System.out.println(e);
-//        }catch (IOException e){
-//            System.out.println(e);
-//        }
-//    }
+
 }

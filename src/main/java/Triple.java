@@ -14,6 +14,12 @@ public class Triple {
         this.index=index;
     }
 
+    @Override
+    public String toString() {
+        return String.format("key:\"%s\"  value:\"%s\"  index:%s",key,value,index);
+    }
+
+
     public Variables.categories getIndex() {
         return index;
     }

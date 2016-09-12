@@ -27,6 +27,8 @@ import javafx.scene.input.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.stage.*;
+import javafx.stage.Popup;
 import javafx.util.Callback;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
@@ -53,16 +55,6 @@ public class CreateGui {
 
     public void TestCreateContentAccordion(Accordion accordion) {
 
-        Variables.instantiate().variable.add(new Triple("Стол","1", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Стул","1", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Палка","1", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Камень","1", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Деньги","15", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Деньги","15", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Деньги","15", Variables.categories.people));
-        Variables.instantiate().variable.add(new Triple("Погода","\"Зима\"", Variables.categories.userVariable));
-
-
         CreateContentAccordion(accordion);
 
     }
@@ -73,7 +65,7 @@ public class CreateGui {
 
     }
 
-    String ChackNameVariable(String NameNew, String oldName) {
+    String CheckNameVariable(String NameNew, String oldName) {
         if (oldName == null || oldName.equals("")) {
             return null;
         }
@@ -138,7 +130,7 @@ public class CreateGui {
 
                 if (oldValue) {//потеря фокуса
 
-                    if ((messErr = ChackNameVariable(textField1.getText(), (String) textField1.getUserData())) != null) {//проверка на норм. нахвание
+                    if ((messErr = CheckNameVariable(textField1.getText(), (String) textField1.getUserData())) != null) {//проверка на норм. нахвание
                         System.out.println(messErr);
                         textField1.requestFocus();
                         return;
@@ -274,44 +266,7 @@ public class CreateGui {
     }}
 
 
-    public String[] whatHeppenedSplit(String s) {
-        if (s == null) {
-            return null;
 
-        }
-        String[] ret = new String[3];
-        String[] options = {"move", "hight", "show"};
-        for (int i = 0; i < 2; i++) {
-            if (s.indexOf(options[i]) == 0) {
-                ret[0] = options[i];
-                ret[1] = "=";
-                ret[2] = s.substring(options[i].length());
-                return ret;
-            }
-
-        }
-        if (s.indexOf(options[2]) == 0) {
-            ret[0] = options[2];
-            ret[1] = null;
-            ret[2] = s.substring(s.indexOf("[")+1, s.indexOf("]"));
-            return ret;
-        }
-        String[] strBuf = s.split("[-+=]");
-        if (strBuf.length == 2 && strBuf[0] != null && strBuf[0].indexOf("[") == 0) {
-            ret[0] = strBuf[0].substring(1, strBuf[0].length() - 1);
-        } else {
-            return null;
-        }
-        if (strBuf[1].indexOf("[") == 0) {
-            ret[2] = strBuf[1].substring(2, strBuf[1].length() - 1);
-
-        } else {
-            ret[2] = strBuf[1];
-        }
-        int length=ret[0].length()+2;
-        ret[1]=s.substring(length,length+1);
-        return ret;
-    }
 
 
     public void AddThenBlock(VBox vBox, Then whatWillChange,boolean last) {
@@ -375,9 +330,7 @@ public class CreateGui {
 
         }
         gp2.add(button, 4, 1);
-        //Label thenLab = new Label("THEN");
-        //thenLab.setPrefWidth(50);
-        //gp2.add(thenLab, 0, 0);
+
 
         ComboBox<Triple> cb = new ComboBox();
 
@@ -395,11 +348,18 @@ public class CreateGui {
                 } else {
                     return user.getKey();
                 }
+
             }
 
             @Override
             public Triple fromString(String userId) {
-                return new Triple(null,null,null);
+                Triple triple=Variables.instantiate().GetFirst(userId);
+                if(triple==null){
+                    return new Triple(userId,"0", Variables.categories.constant);
+                }else {
+                    return triple;
+                }
+
             }
         };
         Callback viewCellList = new Callback<ListView<Triple>, ListCell<Triple>>() {
@@ -413,7 +373,7 @@ public class CreateGui {
                         if (item == null || empty) {
                             setText(null);
                         } else {
-                            setText(item.getValue());
+                            setText(item.getKey());
                         }
                     }
                 };
@@ -429,36 +389,38 @@ public class CreateGui {
         cb2.setId("Combo2");
         cb3.setId("Combo3");
 
+
+
+
         EventHandler<KeyEvent> OnKeyReleased = new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
 
-                if (!event.getText().equals("")) {
-                    ComboBox comboBox = (ComboBox) event.getSource();
-                    System.out.println(comboBox.getSelectionModel().getSelectedIndex());
-                    if (comboBox.getEditor().getText().equals(comboBox.getValue())) {
-                        return;
-                    }
 
-                    List<Triple> list = Variables.instantiate().Find(comboBox.getEditor().getText());
-                    if (list != null) {
-                        comboBox.getItems().removeIf((item) -> {
-                            return !list.contains(item);
-                        });
+                        if (!event.getText().equals("")) {
+                            ComboBox comboBox = (ComboBox) event.getSource();
 
-                        list.forEach((item) -> {
-                            if (!comboBox.getItems().contains(item)) {
-                                comboBox.getItems().add(item);
+                            List<Triple> list = Variables.instantiate().Find(comboBox.getEditor().getText());
+                            if (list != null) {
+
+                                comboBox.getItems().removeIf((item) -> {
+                                    return !list.contains(item);
+                                });
+
+                                list.forEach((item) -> {
+                                    if (!comboBox.getItems().contains(item)) {
+                                        comboBox.getItems().add(item);
+                                    }
+                                });
                             }
-                        });
-                    }
 
-                    if (!comboBox.getItems().isEmpty()) {
-                        comboBox.show();
-                    } else {
-                        comboBox.hide();
+                            if (!comboBox.getItems().isEmpty()) {
+                                comboBox.show();
+                            } else {
+                                comboBox.hide();
+                            }
+
                     }
-                }
             }
         };
         cb.setOnKeyReleased(OnKeyReleased);
@@ -473,37 +435,6 @@ public class CreateGui {
 
 
                 FillComboThen(cb,cb2,cb3,whatWillChange);
-
-//        if (whatWillChange != null) {
-//            String[] splittedWhatWillChange = whatHeppenedSplit(whatWillChange);
-//
-//            if (splittedWhatWillChange != null && splittedWhatWillChange[0] != null) {
-//                cb.setValue(new Pair<Character, String>(splittedWhatWillChange[0].charAt(0), splittedWhatWillChange[0]));
-//                if (splittedWhatWillChange[1] != null) {
-//
-//                    cb2.setValue(splittedWhatWillChange[1]);
-//                } else {
-//                    cb2.setDisable(true);
-//                }
-//                if (splittedWhatWillChange[2].indexOf("\"") == 0) {
-//                    cb3.getEditor().setText(splittedWhatWillChange[2]);
-//                    //setValue(new Pair<Character,String>('E',splittedWhatWillChange[2]));
-//                } else {
-//                    Integer num = ParseIf.tryParse(splittedWhatWillChange[2]);
-//                    if (num != null) {
-//                        cb3.getEditor().setText(String.valueOf(num));
-//                    } else {
-//                        cb3.setValue(new Pair<Character, String>(splittedWhatWillChange[2].charAt(0), splittedWhatWillChange[2]));
-//                    }
-//                }
-//            } else {
-//                System.out.println("Error when creating thenBlock content");
-//            }
-//
-//        }
-
-
-
     }
 
     public  void FillComboThen(ComboBox cb,ComboBox cb2,ComboBox cb3,Then whatHeppened ){
@@ -521,23 +452,7 @@ public class CreateGui {
                 if(whatHeppened.getOperator()==null){
                     cb2.setValue("=");
                 }
-               /* if (splittedWhatWillChange[1] != null) {
 
-                    cb2.setValue(splittedWhatWillChange[1]);
-                } else {
-
-                }*/
-              /*  if (splittedWhatWillChange[2].indexOf("\"") == 0) {
-                    cb3.getEditor().setText(splittedWhatWillChange[2]);
-                    //setValue(new Pair<Character,String>('E',splittedWhatWillChange[2]));
-                } else {
-                    Integer num = ParseIf.tryParse(splittedWhatWillChange[2]);
-                    if (num != null) {
-                        cb3.getEditor().setText(String.valueOf(num));
-                    } else {
-                        cb3.setValue(new Pair<Character, String>(splittedWhatWillChange[2].charAt(0), splittedWhatWillChange[2]));
-                    }
-                }*/
             } else {
                 System.out.println("Error when creating thenBlock content");
             }
@@ -681,18 +596,6 @@ public class CreateGui {
                     grid=parentRecords.getChildren().get(i);
                     if(grid.getClass()==GridPane.class){
 
-                       /* for(Node combo:((GridPane)grid).getChildren()){
-                            if(combo.getId()!=null){
-                            if(combo.getId().equals("Combo1")){
-                                cb[0]=(ComboBox) combo;
-                            }else
-                            if(combo.getId().equals("Combo2")){
-                                cb[1]=(ComboBox) combo;
-                            }else if(combo.getId().equals("Combo3")){
-                                cb[2]=(ComboBox) combo;
-                            }
-                            }
-                        }*/
 
                         cb= GetComboRec((GridPane)grid);
 
