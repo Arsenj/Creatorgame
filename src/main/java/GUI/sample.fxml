@@ -89,7 +89,7 @@
                             </padding>
                             <children>
 
-                                <TextArea wrapText="true" fx:id="text"  VBox.vgrow="ALWAYS">
+                                <TextArea wrapText="true" fx:id="mainText"  VBox.vgrow="ALWAYS">
                                     <padding>
                                         <Insets bottom="5" top="5" />
                                     </padding>

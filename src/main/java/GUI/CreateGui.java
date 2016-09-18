@@ -86,7 +86,7 @@ public class CreateGui {
         }
         return null;
     }
-
+    AddNewEmptyVariable переписать к чертям
 
     public void AddNewEmptyVariable(VBox vBox, String key, String value) {
         GridPane gp;
@@ -142,13 +142,14 @@ public class CreateGui {
                     }
 
                     if (!textField1.getText().equals((String) textField1.getUserData())) {//Если имя новое
+//(((Map) vBox.getUserData()).get(textField1.getText())
 
-                        if ((((Map) vBox.getUserData()).get(textField1.getText()) == null)) {//Если его нет в базе
+                        if (Variables.instantiate().GetFirst(textField1.getText()) == null) {//Если его нет в базе
 
                             if (textField2.getText() == null) {
                                 textField2.setText("0");
                             }
-                            ((Map) vBox.getUserData()).put(textField1.getText(), textField2.getText());
+                           // ((Map) vBox.getUserData()).put(textField1.getText(), textField2.getText());
 
                             if (button.isDisable()) {    //показали кнопку и добавили новое поле
                                 button.setOpacity(opacity);
@@ -340,6 +341,7 @@ public class CreateGui {
         cb2.getItems().addAll("=", "+", "-");
         cb2.setValue("=");
         ComboBox<Triple> cb3 = new ComboBox();
+
         StringConverter stringConverter = new StringConverter<Triple>() {
             @Override
             public String toString(Triple user) {

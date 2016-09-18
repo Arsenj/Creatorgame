@@ -1,7 +1,7 @@
 package main.java.GUI;
 
 
-import  javafx.geometry.Point2D;
+import javafx.geometry.Point2D;
 import javafx.collections.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -20,12 +21,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.*;
 import javafx.stage.Popup;
+import javafx.util.Callback;
 import javafx.util.Pair;
 import main.java.*;
 import sun.awt.windows.ThemeReader;
 import sun.plugin.javascript.navig.Anchor;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import sun.security.ssl.Debug;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
@@ -65,7 +68,7 @@ public class SampleController {
     @FXML
     Button save;
     @FXML
-    TextArea text;
+    TextArea mainText;
 
     Popup popup;
 
@@ -250,10 +253,10 @@ public class SampleController {
         ButtonGame buttonGame = game.getCurrentPage().getSelectedButton();
         Node gridIf;
 
-        String ifText="";
-        boolean ok=true;
-        List<IfThen> ifThens=new ArrayList<>();
-        List<Then> thenList=null;
+        String ifText = "";
+        boolean ok = true;
+        List<IfThen> ifThens = new ArrayList<>();
+        List<Then> thenList = null;
 
         for (int i = 0; i < iFContent.getChildren().size() - skipifContent; i++) {//Все if-ы
             gridIf = iFContent.getChildren().get(i);
@@ -301,7 +304,7 @@ public class SampleController {
                         continue;
                     }
                     if (ok) {
-                        Triple triple=(Triple) cb[0].getValue();
+                        Triple triple = (Triple) cb[0].getValue();
                         System.out.println(triple.toString());
                         thenList.add(new Then(triple, (String) cb[1].getValue(), (Triple) cb[2].getValue()));
                     }
@@ -316,8 +319,8 @@ public class SampleController {
             //game.getCurrentPage().getSelectedButton().whatHappend.add()
 
         }
-        if(ok){
-            System.out.println("User message: All saved" );
+        if (ok) {
+            System.out.println("User message: All saved");
             game.getCurrentPage().getSelectedButton().whatHappend.clear();
             game.getCurrentPage().getSelectedButton().whatHappend.addAll(ifThens);
             ;
@@ -379,17 +382,12 @@ public class SampleController {
     }
 
 
-    public void SaveText(){
-        game.getCurrentPage().text=text.getText();
+    public void SaveText() {
+        game.getCurrentPage().text = mainText.getText();
     }
 
 
-    public Popup CreatePopup(javafx.scene.control.TextArea parent){
-
-
-
-
-
+    public Popup CreatePopup(javafx.scene.control.TextArea parent) {
 
 
         return popup;
@@ -398,51 +396,142 @@ public class SampleController {
 
     private void GuiInit() {
 
+        popup = new Popup();
+
+        javafx.scene.control.ScrollPane pane = new javafx.scene.control.ScrollPane();
+        popup.getContent().add(pane);
+        ListView listView = new ListView();
+        pane.setContent(listView);
+        listView.setPrefWidth(100);
+        listView.setPrefHeight(100);
+
+
+        listView.setCellFactory(new Callback<ListView<Triple>, ListCell<String>>() {
+            @Override
+            public ListCell call(ListView<Triple> param) {
+                System.out.println("size: " + param.getItems().size());
+
+                return new ListCell<Triple>() {
+                    @Override
+                    protected void updateItem(Triple item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setText(null);
+                        } else {
+                            setText(item.getKey());
+                        }
+                    }
+                };
+            }
+        });
+
+
+        listView.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+
+                if (!event.getCode().isArrowKey() && !event.getCode().isFunctionKey() && !event.getCode().isNavigationKey()) {
+                    int startIndex = mainText.getText().lastIndexOf('[', mainText.getCaretPosition()) + 1;
+                    if (startIndex > 0) {
+                        System.out.println("sub list " + mainText.getText().substring(startIndex, mainText.getCaretPosition()));
+                        List<Triple> res = Variables.instantiate().Find(mainText.getText().substring(startIndex, mainText.getCaretPosition()));
+                        if (res != null && !listView.getItems().equals(res)) {
+                            listView.getItems().clear();
+                            listView.getItems().addAll(res);
+                        }
+                    }
+
+                }
+
+                if (event.getCode() == KeyCode.ENTER) {
+                    if (listView.getSelectionModel().getSelectedItem() != null) {
+                        String setStr = ((Triple) listView.getSelectionModel().getSelectedItem()).getKey();
+                        //System.out.println("start " + start + " finish " + finish);
+                        int index = mainText.getText().lastIndexOf('[', mainText.getCaretPosition());
+                        mainText.deleteText(index, mainText.getCaretPosition());
+
+                        /*if (mainText.getCaretPosition() > 0 && mainText.getText().charAt(mainText.getCaretPosition() - 1) == '[') {
+                            mainText.deletePreviousChar();
+                        }*/
+                        mainText.insertText(mainText.getCaretPosition(), "[" + setStr + "]");
+                        popup.hide();
+                    }
+                }
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    popup.hide();
+                }
+            }
+
+        });
+
+
+        mainText.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getText().equals("[")) {
+                    mainText.setUserData(mainText.getCaretPosition());
+
+                    Point2D p = mainText.localToScene(0.0, 0.0);
+                    double x = p.getX() + mainText.getScene().getX() + mainText.getScene().getWindow().getX();
+                    double y = p.getY() + mainText.getScene().getY() + mainText.getScene().getWindow().getY();
+                    x += mainText.getWidth();
+                    listView.getItems().clear();
+                    listView.getItems().addAll(Variables.instantiate().variable);
+                    popup.show(mainText, x, y);
+                }
+              /*  Integer pos = (Integer) mainText.getUserData();
+                if (pos != null) {
+                    System.out.println("POS: " + pos + " " + mainText.getCaretPosition());
+                    if (pos < mainText.getCaretPosition()) {
+                        System.out.println("sub " + mainText.getText().substring(pos, mainText.getCaretPosition()));
+                        listView.getItems().clear();
+                        listView.getItems().addAll(
+                                Variables.instantiate().Find(mainText.getText().substring(pos, mainText.getCaretPosition())));
+                    }
+                }*/
+
+                if (event.getText().equals("]")) {
+                    popup.hide();
+                    mainText.setUserData(null);
+
+                }
+            }
+        });
+            /*@Override
+            public void hendler(mainTextEvent e) {
+
+            }
+
+        });*/
 
 
 
-            popup = new Popup();
-            javafx.scene.control.ScrollPane pane = new javafx.scene.control.ScrollPane();
-            ListView listView = new ListView();
-            pane.setContent(listView);
-            listView.setPrefWidth(100);
-            listView.setPrefHeight(100);
-             listView.getItems().addAll(new Object[]{"1","2","3"});
-
-
-            text.setOnKeyPressed(new EventHandler<KeyEvent>() {
+       /* mainText.setOnKeyPressed(new EventHandler<KeyEvent>() {
                 @Override
                 public void handle(KeyEvent event) {
                     if (event.getText().equals("[")) {
 
-                        Point2D p = text.localToScene(0.0, 0.0);
-                        double x = p.getX() + text.getScene().getX() + text.getScene().getWindow().getX();
-                        double y = p.getY() + text.getScene().getY() + text.getScene().getWindow().getY();
-                        x += text.getWidth();
-                        popup.show(text, x, y);
 
                     }
-                    if (event.getText().equals("]")) {
+                    if (event.getText().equals("]") || event.getCode()==KeyCode.ESCAPE) {
                         popup.hide();
                     }
                 }
-            });
-            text.focusedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if (oldValue) {
-                        popup.hide();
-                    }
+            });*/
+        mainText.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (oldValue) {
+                    popup.hide();
                 }
-            });
+            }
+        });
 
 
-        код выше не работает. хз
-
+        //  код выше не работает. хз
 
 
         //listView.getItems().addAll(new Object[]{"1","2","3","4","5"});
-
 
 
         createGui.TestCreateContentAccordion(listVariable);
