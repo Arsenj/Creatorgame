@@ -19,6 +19,10 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.TreeItem?>
+<?import javafx.scene.layout.TilePane?>
+
 <GridPane fx:id="globGrid" gridLinesVisible="true" prefHeight="294.0" prefWidth="769.0" stylesheets="@style/style.css" xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.GUI.SampleController">
     <columnConstraints>
         <!--  <ColumnConstraints percentWidth="20" />
@@ -38,13 +42,23 @@
         <menus>
             <Menu text="File">
                 <items>
-                    <MenuItem text="New" />
-                    <MenuItem text="Open" />
-                    <MenuItem text="Save" />
-                    <MenuItem text="Save As" />
+                    <MenuItem text="New" onAction="#NewGame"/>
+                    <MenuItem text="Open" onAction="#OpenGame"/>
+                    <MenuItem text="Save" onAction="#SaveGame"/>
+                    <MenuItem text="Save As" onAction="#SaveAsGame"/>
                     <SeparatorMenuItem />
-                    <MenuItem text="Exit" />
+                    <MenuItem text="Exit" onAction="#ExitGame"/>
                 </items>
+            </Menu>
+            <Menu text="Page">
+                <MenuItem text="Add" onAction="#AddPage"/>
+                <MenuItem text="Delete"/>
+            </Menu>
+            <Menu text="Game">
+            <items>
+                <MenuItem text="Compile" />
+                <MenuItem text="Run" />
+            </items>
             </Menu>
             <Menu text="Test button">
                 <items>
@@ -53,8 +67,13 @@
                     <MenuItem onAction="#checkMemory" text="Chaeck memory" />
                     <MenuItem onAction="#TestGoTOFirstPage" text="GoToFirstPage" />
                     <MenuItem onAction="#TestGoTOSecondPage" text="GoToSecondPage" />
+                    <MenuItem onAction="#TestTreeView" text="testTreeView"/>
+                    <MenuItem onAction="#FillTree" text="FillTree"/>
+                    <MenuItem onAction="#TestRemovePageId1" text="TestRemovePageId1"/>
+
                 </items>
             </Menu>
+
         </menus>
     </MenuBar>
 
@@ -62,6 +81,10 @@
     <!--main Contant-->
     <SplitPane dividerPositions="0.2, 0.7" nodeOrientation="LEFT_TO_RIGHT" orientation="HORIZONTAL" GridPane.columnIndex="0" GridPane.rowIndex="1">
         <items>
+            <SplitPane dividerPositions="0.5,0.5" orientation="VERTICAL">
+                <items>
+
+
             <Accordion fx:id="listVariable">
                 <!-- <panes>
                      <TitledPane animated="false" maxWidth="1.7976931348623157E308" text="untitled 1">
@@ -82,12 +105,34 @@
                  </panes>-->
             </Accordion>
 
+                        <TreeView   fx:id="parentTreeView">
+
+                           <TreeItem  fx:id="rootPageTree" value="Всего страниц 0" expanded="true">
+
+
+                           </TreeItem>
+                        </TreeView>
+
+                </items>
+            </SplitPane>
             <ScrollPane fx:id="scrollPane1">
                         <VBox fx:id="pageContent" alignment="TOP_CENTER" spacing="10">
                             <padding>
                                 <Insets bottom="5" left="5" right="10" top="5" />
                             </padding>
                             <children>
+                                <GridPane>
+                                    <rowConstraints>
+                                        <RowConstraints/>
+                                    </rowConstraints>
+                                    <children>
+                                        <Label GridPane.rowIndex="1" fx:id="comment1" text="qweqweqe">
+                                            <GridPane.margin>
+                                                <Insets left="5" right="5"/>
+                                            </GridPane.margin>
+                                        </Label>
+                                    </children>
+                                </GridPane>
 
                                 <TextArea wrapText="true" fx:id="mainText"  VBox.vgrow="ALWAYS">
                                     <padding>
@@ -140,12 +185,16 @@
                             <SplitPane dividerPositions="0.5" layoutX="0" layoutY="0" prefWidth="${anchor1.width}">
                                 <items>
                                     <VBox>
-                                        <Label text="Текст" />
-                                        <Label text="Номмер" />
+
+                                        <Label prefHeight="25" text="Текст кнопки" />
+                                        <Label prefHeight="25" text="Номмер кнопки" />
+                                        <Label prefHeight="25" text="Пояснения к странице" />
                                     </VBox>
                                     <VBox>
-                                        <TextField fx:id="textButton" />
-                                        <TextField fx:id="numberButton" />
+
+                                        <TextField prefHeight="20" fx:id="textButton" />
+                                        <TextField prefHeight="20" fx:id="numberButton" />
+                                        <TextField prefHeight="20" fx:id="comment" />
                                     </VBox>
                                 </items>
                             </SplitPane>

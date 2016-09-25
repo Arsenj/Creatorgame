@@ -303,10 +303,14 @@ public class ParseIf {
     }
 
     public Boolean GetIf(String textIf) {
+        //!!!Зачем проверка на IF в строке
+/*
         if (textIf.length() <= 2 || !textIf.substring(0, 2).equals("if")) {
             return null;
         }
-        String res = RegularExpression(textIf.substring(2));
+                                             .substring(2)*/
+        String res = RegularExpression(textIf);
+
 
         return RegularBool(new StringBuilder(res));
     }

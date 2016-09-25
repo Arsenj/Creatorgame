@@ -10,8 +10,9 @@ import java.util.List;
 /**
  * Created by arsen on 15.08.2016.
  */
-public class StructGame {
+public class StructGame implements  Serializable {
     public  int id;
+    public  String comment;
     public  String text;
     public List<ButtonGame> buttons;
     private  int selectedButton;
@@ -29,12 +30,16 @@ public class StructGame {
     public  int getIndexSelectedButton(){
         return  selectedButton;
     }
+
     public void setIndexSelectButton(int indexSelectButton){
-        if(indexSelectButton>=0 && indexSelectButton<buttons.size()){
+        if(indexSelectButton>=-1 && indexSelectButton<buttons.size()){
             selectedButton=indexSelectButton;
         }
     }
     public ButtonGame getSelectedButton(){
+        if(buttons.size()==0 || selectedButton==-1){
+            return null;
+        }
         return  buttons.get(selectedButton);
     }
 
@@ -56,6 +61,7 @@ public class StructGame {
 
         buttons=new ArrayList<>();
         onLoadHappend=new ArrayList<>();
+      comment="";
 
     }
 

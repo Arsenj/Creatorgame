@@ -12,6 +12,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.*;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -19,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
@@ -49,15 +51,14 @@ import java.util.function.Predicate;
 
 public class CreateGui {
 
-    private  int SkipifContent=1;
+    private int SkipifContent = 1;
 
 
+   /* public void TestCreateContentAccordion(Accordion accordion) {
 
-    public void TestCreateContentAccordion(Accordion accordion) {
+        CreateFillContentAccordion(accordion);
 
-        CreateContentAccordion(accordion);
-
-    }
+    }*/
 
 
     public void removeAtVariable(VBox vBox, java.lang.Object removeObj) {
@@ -86,7 +87,41 @@ public class CreateGui {
         }
         return null;
     }
-    AddNewEmptyVariable переписать к чертям
+
+
+    public void AddPageToTreeView(TreeItem parent, Game game, StructGame structGame) {
+
+
+        TreeItem item = new TreeItem(structGame.id + ") " + structGame.comment);
+
+        parent.getChildren().add(item);
+
+
+/*
+        ContextMenu contextMenu=new ContextMenu();
+        //item.setContextMenu(contextMenu);
+        MenuItem menuItem=new MenuItem("Перейти");
+        menuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                game.getPageById(structGame.id);
+            }
+        });
+        contextMenu.getItems().add(menuItem);
+        menuItem=new MenuItem("Удалить");
+        menuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                game.DeletePageById(structGame.id);
+                parent.getChildren().remove(item);
+            }
+        });
+        contextMenu.getItems().add(menuItem);
+
+        //parent.getRoot()
+
+        parent.getChildren().add(item);*/
+    }
 
     public void AddNewEmptyVariable(VBox vBox, String key, String value) {
         GridPane gp;
@@ -113,8 +148,11 @@ public class CreateGui {
         EventHandler<ActionEvent> EventRemove = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ((Map) vBox.getUserData()).remove(textField1.getText());
-                vBox.getChildren().remove(gp);
+                //((Map) vBox.getUserData()).remove(textField1.getText());
+
+                if (Variables.instantiate().Remove(textField1.getText())) {
+                    vBox.getChildren().remove(gp);
+                }
             }
         };
 
@@ -144,12 +182,12 @@ public class CreateGui {
                     if (!textField1.getText().equals((String) textField1.getUserData())) {//Если имя новое
 //(((Map) vBox.getUserData()).get(textField1.getText())
 
-                        if (Variables.instantiate().GetFirst(textField1.getText()) == null) {//Если его нет в базе
+                        if (Variables.instantiate().GetEquals(textField1.getText()) == null) {//Если его нет в базе
 
                             if (textField2.getText() == null) {
                                 textField2.setText("0");
                             }
-                           // ((Map) vBox.getUserData()).put(textField1.getText(), textField2.getText());
+                            // ((Map) vBox.getUserData()).put(textField1.getText(), textField2.getText());
 
                             if (button.isDisable()) {    //показали кнопку и добавили новое поле
                                 button.setOpacity(opacity);
@@ -157,6 +195,26 @@ public class CreateGui {
                                 AddNewEmptyVariable(vBox, null, null);
                             }
                             textField1.setUserData(null);
+
+                            String name = null;
+                            Node buf = vBox.getParent();
+                            for (int i = 0; i < 5; i++) {
+                                if (buf.getClass() != TitledPane.class) {
+                                    buf = buf.getParent();
+                                } else {
+                                    name = ((TitledPane) buf).getText();
+                                    break;
+                                }
+                            }
+                            if (name != null) {
+                                System.out.println("add'" + textField1.getText() + "'");
+                                Variables.instantiate().variable.add(new Triple(textField1.getText(), textField2.getText(),
+                                        Variables.instantiate().GetCategoryByName(name)));
+                            } else {
+                                System.out.println("Мне стыдно за этот костыль");
+
+                            }
+
                         } else {
                             System.out.println("Это имя переменной занято");
                             textField1.requestFocus();
@@ -168,6 +226,15 @@ public class CreateGui {
             }
         };
 
+        textField1.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode() == KeyCode.ENTER) {
+                    textField2.requestFocus();
+                }
+
+            }
+        });
         textField1.focusedProperty().addListener(ChangeNamevaliable);
         button.setOnAction(EventRemove);
         button.setText("X");
@@ -193,9 +260,32 @@ public class CreateGui {
         vBox.getChildren().add(gp);
     }
 
+    public void FillContentAccordion(Accordion accordion) {
+        for (TitledPane titledPane : accordion.getPanes()) {
+            VBox vBox = (VBox) ((javafx.scene.control.ScrollPane) titledPane.getContent()).getContent();
+            List<Triple> tripleList = Variables.instantiate().GetCategories(Variables.instantiate().GetCategoryByName(titledPane.getText()));
+            for (Triple triple : tripleList) {
+                AddNewEmptyVariable(vBox, triple.getKey(), triple.getValue());
+            }
+        }
+    }
 
-    public void CreateContentAccordion(Accordion accordion) {
 
+    public void CreateEmptyContentAccordion(Accordion accordion) {
+        VBox vBox;
+        javafx.scene.control.ScrollPane scrollPane;
+        for (Map.Entry<Variables.categories, String> items : Variables.instantiate().titleName.entrySet()) {
+            scrollPane = new javafx.scene.control.ScrollPane();
+
+            vBox = new VBox();
+            scrollPane.setContent(vBox);
+            AddNewEmptyVariable(vBox, null, null);
+            accordion.getPanes().add(new TitledPane(items.getValue(), scrollPane));
+
+        }
+    }
+
+    public void CreateFillContentAccordion(Accordion accordion) {
 
         VBox vBox;
         //GridPane gp;
@@ -203,7 +293,7 @@ public class CreateGui {
         GridPane gp;
         javafx.scene.control.ScrollPane scrollPane;
 
-        for ( Map.Entry<Variables.categories, String> items :Variables.instantiate().titleName.entrySet()){
+        for (Map.Entry<Variables.categories, String> items : Variables.instantiate().titleName.entrySet()) {
             scrollPane = new javafx.scene.control.ScrollPane();
 
             vBox = new VBox();
@@ -213,71 +303,27 @@ public class CreateGui {
 
             List<Triple> triples;
             //for(Variables.categories categories:Variables.categories.values()){
-                triples=Variables.instantiate().GetCategories(items.getKey());
+            triples = Variables.instantiate().GetCategories(items.getKey());
 
-                for (Triple item:triples){
-                    AddNewEmptyVariable(vBox, item.getKey(), item.getValue());
-                }
-                AddNewEmptyVariable(vBox, null, null);
-                accordion.getPanes().add(new TitledPane(items.getValue(), scrollPane));
-            //}
-
-
-
-
-         /*   for (java.lang.Object item : items.getValue().entrySet()) {
-
-
-//                gp=new GridPane();
-//                gp.getColumnConstraints().addAll(new ColumnConstraints(),new ColumnConstraints());
-//                textField=new TextField(((Map.Entry)item).getKey() .toString());
-//                gp.add(textField,0,0);
-//                textField=new TextField(((Map.Entry)item).getValue().toString());
-//                //textField.setEditable(false);
-//                gp.add(textField,1,0);
-//                vBox.getChildren().add(gp);
+            for (Triple item : triples) {
+                AddNewEmptyVariable(vBox, item.getKey(), item.getValue());
             }
             AddNewEmptyVariable(vBox, null, null);
             accordion.getPanes().add(new TitledPane(items.getValue(), scrollPane));
+
+
         }
-*/
-
-     /*   for (int i = 0; i < Variables.instantiate().titleName.size(); i++) {
-            scrollPane = new javafx.scene.control.ScrollPane();
-
-            vBox = new VBox();
-            vBox.setUserData(listTitle.get(i).getValue());
-            scrollPane.setContent(vBox);
-            for (java.lang.Object item : listTitle.get(i).getValue().entrySet()) {
-
-                AddNewEmptyVariable(vBox, ((Map.Entry) item).getKey().toString(), ((Map.Entry) item).getValue().toString());
-//                gp=new GridPane();
-//                gp.getColumnConstraints().addAll(new ColumnConstraints(),new ColumnConstraints());
-//                textField=new TextField(((Map.Entry)item).getKey() .toString());
-//                gp.add(textField,0,0);
-//                textField=new TextField(((Map.Entry)item).getValue().toString());
-//                //textField.setEditable(false);
-//                gp.add(textField,1,0);
-//                vBox.getChildren().add(gp);
-            }
-            AddNewEmptyVariable(vBox, null, null);
-            accordion.getPanes().add(new TitledPane(listTitle.get(i).getKey(), scrollPane));
-        }*/
-
-    }}
+    }
 
 
-
-
-
-    public void AddThenBlock(VBox vBox, Then whatWillChange,boolean last) {
+    public void AddThenBlock(VBox vBox, Then whatWillChange, boolean last) {
         double opacity = 0.3;
         GridPane gp2 = new GridPane();
-        if(last){
-        vBox.getChildren().add(gp2);
-        }else {
-            if(vBox.getChildren().size()>0)
-            vBox.getChildren().add(vBox.getChildren().size()-1,gp2);
+        if (last) {
+            vBox.getChildren().add(gp2);
+        } else {
+            if (vBox.getChildren().size() > 0)
+                vBox.getChildren().add(vBox.getChildren().size() - 1, gp2);
         }
         //GridIfBlock.add(gp2, 0, 1, 2, 1);
         vBox.setMargin(gp2, new Insets(10, 0, 10, 5));
@@ -322,7 +368,7 @@ public class CreateGui {
                 public void handle(ActionEvent event) {
                     button.setText("X");
                     button.setOnAction(removeAction);
-                    AddThenBlock(vBox, null,true);
+                    AddThenBlock(vBox, null, true);
                 }
             });
         } else {
@@ -342,11 +388,13 @@ public class CreateGui {
         cb2.setValue("=");
         ComboBox<Triple> cb3 = new ComboBox();
 
+        переписать combobox для переменных к чртовой матери!!!
         StringConverter stringConverter = new StringConverter<Triple>() {
             @Override
             public String toString(Triple user) {
+                System.out.println("string converter "+user);
                 if (user == null) {
-                    return null;
+                    return "1";
                 } else {
                     return user.getKey();
                 }
@@ -355,10 +403,13 @@ public class CreateGui {
 
             @Override
             public Triple fromString(String userId) {
-                Triple triple=Variables.instantiate().GetFirst(userId);
-                if(triple==null){
-                    return new Triple(userId,"0", Variables.categories.constant);
-                }else {
+                Triple triple = Variables.instantiate().FindFullVarOrConst(userId);
+                System.out.println("triple"+triple.getKey());
+
+                if (triple == null) {
+
+                    return new Triple(userId, "0", Variables.categories.constant);
+                } else {
                     return triple;
                 }
 
@@ -392,40 +443,49 @@ public class CreateGui {
         cb3.setId("Combo3");
 
 
-
-
         EventHandler<KeyEvent> OnKeyReleased = new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
 
+                ComboBox comboBox = (ComboBox) event.getSource();
+                if (!event.getText().equals("")) {
 
-                        if (!event.getText().equals("")) {
-                            ComboBox comboBox = (ComboBox) event.getSource();
 
-                            List<Triple> list = Variables.instantiate().Find(comboBox.getEditor().getText());
-                            if (list != null) {
+                    List<Triple> list=new ArrayList<>();
+                    list.addAll(Variables.instantiate().Find(comboBox.getEditor().getText()));
+                    System.out.println("size1 "+list.size());
+                    list.addAll(Variables.instantiate().FindOptions(comboBox.getEditor().getText()));
+                    System.out.println("size2 "+list.size());
+                    if (list.size()>0) {
+                        //добавление системных команд
+                       // comboBox.getSelectionModel().select(-1);
 
-                                comboBox.getItems().removeIf((item) -> {
-                                    return !list.contains(item);
-                                });
+                        System.out.println("Select before"+ comboBox.getSelectionModel().getSelectedIndex());
 
-                                list.forEach((item) -> {
-                                    if (!comboBox.getItems().contains(item)) {
-                                        comboBox.getItems().add(item);
-                                    }
-                                });
+                        comboBox.getItems().removeIf((item) -> {
+                            return !list.contains(item);
+                        });
+
+                        list.forEach((item) -> {
+                            if (!comboBox.getItems().contains(item)) {
+                                comboBox.getItems().add(item);
                             }
-
-                            if (!comboBox.getItems().isEmpty()) {
-                                comboBox.show();
-                            } else {
-                                comboBox.hide();
-                            }
-
+                        });
+                        System.out.println("Select after"+ comboBox.getSelectionModel().getSelectedIndex());
                     }
+
+                    if (!comboBox.getItems().isEmpty()) {
+                        comboBox.show();
+                    } else {
+                        comboBox.hide();
+                    }
+
+                }
+
             }
         };
         cb.setOnKeyReleased(OnKeyReleased);
+
         cb3.setOnKeyReleased(OnKeyReleased);
         cb3.setEditable(true);
         cb.setPrefWidth(90);
@@ -435,23 +495,21 @@ public class CreateGui {
         gp2.add(cb3, 3, 1);
 
 
-
-                FillComboThen(cb,cb2,cb3,whatWillChange);
+        FillComboThen(cb, cb2, cb3, whatWillChange);
     }
 
-    public  void FillComboThen(ComboBox cb,ComboBox cb2,ComboBox cb3,Then whatHeppened ){
-
+    public void FillComboThen(ComboBox cb, ComboBox cb2, ComboBox cb3, Then whatHeppened) {
 
 
         if (whatHeppened != null) {
-           // String[] splittedWhatWillChange = whatHeppenedSplit(whatHeppened);
+            // String[] splittedWhatWillChange = whatHeppenedSplit(whatHeppened);
 
-            if (whatHeppened != null && whatHeppened.getVariable1() != null && whatHeppened.getVariable2()!=null) {
+            if (whatHeppened != null && whatHeppened.getVariable1() != null && whatHeppened.getVariable2() != null) {
                 cb.setValue(whatHeppened.getVariable1());
                 cb3.setValue(whatHeppened.getVariable2());
                 //cb.setValue(new Pair<Character, String>(whatHeppened.getVariable1().getKey(),whatHeppened.getVariable1().getValue()));
                 //cb3.setValue(new Pair<Character, String>(whatHeppened.getVariable2().getKey(),whatHeppened.getVariable2().getValue()));
-                if(whatHeppened.getOperator()==null){
+                if (whatHeppened.getOperator() == null) {
                     cb2.setValue("=");
                 }
 
@@ -466,7 +524,7 @@ public class CreateGui {
     public void setIfTrxtComponent(GridPane parent, String setText) {
         //TextField textField;
         for (Node item : parent.getChildren()) {
-            if (item.getId()!=null && item.getId().equals("IF")) {
+            if (item.getId() != null && item.getId().equals("IF")) {
                 ((javafx.scene.control.TextArea) item).setText(setText);
                 return;
             }
@@ -476,8 +534,8 @@ public class CreateGui {
     public String getIfTrxtComponent(GridPane parent) {
         //TextField textField;
         for (Node item : parent.getChildren()) {
-            if (item.getId()!=null && item.getId().equals("IF")) {
-                return  ((javafx.scene.control.TextArea) item).getText();
+            if (item.getId() != null && item.getId().equals("IF")) {
+                return ((javafx.scene.control.TextArea) item).getText();
             }
         }      //  TextField textField=(TextField) gp.getChildren().get(1);
         return null;
@@ -539,12 +597,12 @@ public class CreateGui {
         if (whatHappend != null) {
             textArea.setText(whatHappend.getIfString());
             //разделить "что случится" и поместить в текстовые поля
-        //    String[] recHeppend = whatHappend.getValue().split(";");
+            //    String[] recHeppend = whatHappend.getValue().split(";");
             for (int i = 0; i < whatHappend.getThenList().size(); i++) {
-                AddThenBlock(vBox, whatHappend.getThenList().get(i),true);
+                AddThenBlock(vBox, whatHappend.getThenList().get(i), true);
             }
         }
-        AddThenBlock(vBox, null,true);
+        AddThenBlock(vBox, null, true);
 
 
         //gp.add(flowP,0,0);
@@ -555,61 +613,61 @@ public class CreateGui {
     }
 
 
-    public ComboBox[] GetComboRec(GridPane parent){
-        ComboBox[] ret=new ComboBox[3];
-        for (Node item:parent.getChildren()){
-            if(item.getId()!=null && item.getId().equals("Combo1")){
-                ret[0]=(ComboBox)item;
+    public ComboBox[] GetComboRec(GridPane parent) {
+        ComboBox[] ret = new ComboBox[3];
+        for (Node item : parent.getChildren()) {
+            if (item.getId() != null && item.getId().equals("Combo1")) {
+                ret[0] = (ComboBox) item;
             }
-            if(item.getId()!=null && item.getId().equals("Combo2")){
-                ret[1]=(ComboBox)item;
+            if (item.getId() != null && item.getId().equals("Combo2")) {
+                ret[1] = (ComboBox) item;
             }
-            if(item.getId()!=null && item.getId().equals("Combo3")){
-                ret[2]=(ComboBox)item;
+            if (item.getId() != null && item.getId().equals("Combo3")) {
+                ret[2] = (ComboBox) item;
             }
         }
-        return  ret;
+        return ret;
     }
 
 
-    public void FillThenBlock(GridPane parent,List<Then> allChange) {
-        ComboBox[] cb=new ComboBox[3];
-     //   String[] shortChanged=allChange.split(";");
-                //whatHeppenedSplit(allChange);
+    public void FillThenBlock(GridPane parent, List<Then> allChange) {
+        ComboBox[] cb = new ComboBox[3];
+        //   String[] shortChanged=allChange.split(";");
+        //whatHeppenedSplit(allChange);
 
         for (Node item : parent.getChildren()) {
-            if (item.getId()!=null && item.getId().equals("Then")) {
-                VBox parentRecords=(VBox) item;
-                int howWasRecord=parentRecords.getChildren().size()-1;
-                int sub=howWasRecord-allChange.size();
-                if(sub>0){
-                    parentRecords.getChildren().remove(0,sub);
-                    howWasRecord=parentRecords.getChildren().size()-1;
-                }else{
-                    if(sub<0){
-                        sub*=-1;
-                        for(int i=0; i<sub;i++){
-                            AddThenBlock(parentRecords,allChange.get(i+howWasRecord),false);
+            if (item.getId() != null && item.getId().equals("Then")) {
+                VBox parentRecords = (VBox) item;
+                int howWasRecord = parentRecords.getChildren().size() - 1;
+                int sub = howWasRecord - allChange.size();
+                if (sub > 0) {
+                    parentRecords.getChildren().remove(0, sub);
+                    howWasRecord = parentRecords.getChildren().size() - 1;
+                } else {
+                    if (sub < 0) {
+                        sub *= -1;
+                        for (int i = 0; i < sub; i++) {
+                            AddThenBlock(parentRecords, allChange.get(i + howWasRecord), false);
                         }
                     }
                 }
                 Node grid;
-                for(int i=0; i<howWasRecord;i++){
-                    grid=parentRecords.getChildren().get(i);
-                    if(grid.getClass()==GridPane.class){
+                for (int i = 0; i < howWasRecord; i++) {
+                    grid = parentRecords.getChildren().get(i);
+                    if (grid.getClass() == GridPane.class) {
 
 
-                        cb= GetComboRec((GridPane)grid);
+                        cb = GetComboRec((GridPane) grid);
 
-                        for(int j=0; j<cb.length;j++){
-                            if(cb[j]==null){
-                                System.out.println("Not found Combo"+(j+1));
+                        for (int j = 0; j < cb.length; j++) {
+                            if (cb[j] == null) {
+                                System.out.println("Not found Combo" + (j + 1));
                                 return;
                             }
                         }
 
                         //Крэшится когда переключаешь больший Then в Меньший
-                        FillComboThen(cb[0],cb[1],cb[2],allChange.get(i));
+                        FillComboThen(cb[0], cb[1], cb[2], allChange.get(i));
                     }
                 }
             }
@@ -617,10 +675,8 @@ public class CreateGui {
     }
 
 
-    public Button CreateButtonOfChoice(VBox parent, String name) {
-        Button button = new Button(name);
+  /*  public Button CreateButtonOfChoice(VBox parent, String name,int howElemensSkip) {
 
-        parent.getChildren().add(button);
         return button;
-    }
+    }*/
 }
