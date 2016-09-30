@@ -1,12 +1,13 @@
 package main.java;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by arsen on 09.09.2016.
  */
-public class IfThen {
+public class IfThen implements Serializable{
     private String ifString;
     private List<Then> thenList;
 

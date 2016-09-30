@@ -13,15 +13,13 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeItem?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-
-<?import javafx.scene.control.TreeView?>
-<?import javafx.scene.control.TreeItem?>
-<?import javafx.scene.layout.TilePane?>
 
 <GridPane fx:id="globGrid" gridLinesVisible="true" prefHeight="294.0" prefWidth="769.0" stylesheets="@style/style.css" xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.GUI.SampleController">
     <columnConstraints>
@@ -38,21 +36,21 @@
 
 
     <!-- <Separator GridPane.rowIndex="1" GridPane.columnSpan="1" halignment="RIGHT" orientation="VERTICAL" prefWidth="20" prefHeight="200.0" />-->
-    <MenuBar prefHeight="25.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
+    <MenuBar focusTraversable="false" prefHeight="25.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
         <menus>
-            <Menu text="File">
+            <Menu mnemonicParsing="false" text="File">
                 <items>
-                    <MenuItem text="New" onAction="#NewGame"/>
-                    <MenuItem text="Open" onAction="#OpenGame"/>
-                    <MenuItem text="Save" onAction="#SaveGame"/>
-                    <MenuItem text="Save As" onAction="#SaveAsGame"/>
+                    <MenuItem onAction="#NewGame" text="New" />
+                    <MenuItem onAction="#OpenGame" text="Open" />
+                    <MenuItem onAction="#SaveGame" text="Save" />
+                    <MenuItem onAction="#SaveAsGame" text="Save As" />
                     <SeparatorMenuItem />
-                    <MenuItem text="Exit" onAction="#ExitGame"/>
+                    <MenuItem onAction="#ExitGame" text="Exit" />
                 </items>
             </Menu>
             <Menu text="Page">
-                <MenuItem text="Add" onAction="#AddPage"/>
-                <MenuItem text="Delete"/>
+                <MenuItem onAction="#AddPage" text="Add" />
+                <MenuItem text="Delete" />
             </Menu>
             <Menu text="Game">
             <items>
@@ -62,14 +60,17 @@
             </Menu>
             <Menu text="Test button">
                 <items>
-                    <MenuItem onAction="#FillVariable" text="FillAccordion" />
+                    <MenuItem onAction="#FillVariable" text="FillAccordion"  mnemonicParsing="false"/>
                     <MenuItem onAction="#CreateBlockIf" text="Add IfBlock" />
                     <MenuItem onAction="#checkMemory" text="Chaeck memory" />
                     <MenuItem onAction="#TestGoTOFirstPage" text="GoToFirstPage" />
                     <MenuItem onAction="#TestGoTOSecondPage" text="GoToSecondPage" />
-                    <MenuItem onAction="#TestTreeView" text="testTreeView"/>
-                    <MenuItem onAction="#FillTree" text="FillTree"/>
-                    <MenuItem onAction="#TestRemovePageId1" text="TestRemovePageId1"/>
+                    <MenuItem onAction="#TestTreeView" text="testTreeView" />
+                    <MenuItem onAction="#FillTree" text="FillTree" />
+                    <MenuItem onAction="#TestRemovePageId1" text="TestRemovePageId1" />
+                    <MenuItem onAction="#PrintVariables" text="PrintVariables" />
+                    <MenuItem onAction="#PrintGams" text="PrintGams" />
+
 
                 </items>
             </Menu>
@@ -81,7 +82,7 @@
     <!--main Contant-->
     <SplitPane dividerPositions="0.2, 0.7" nodeOrientation="LEFT_TO_RIGHT" orientation="HORIZONTAL" GridPane.columnIndex="0" GridPane.rowIndex="1">
         <items>
-            <SplitPane dividerPositions="0.5,0.5" orientation="VERTICAL">
+            <SplitPane dividerPositions="0.5" orientation="VERTICAL">
                 <items>
 
 
@@ -105,9 +106,9 @@
                  </panes>-->
             </Accordion>
 
-                        <TreeView   fx:id="parentTreeView">
+                        <TreeView fx:id="parentTreeView">
 
-                           <TreeItem  fx:id="rootPageTree" value="Всего страниц 0" expanded="true">
+                           <TreeItem fx:id="rootPageTree" expanded="true" value="Всего страниц 0">
 
 
                            </TreeItem>
@@ -123,18 +124,22 @@
                             <children>
                                 <GridPane>
                                     <rowConstraints>
-                                        <RowConstraints/>
+                                        <RowConstraints />
+                        <RowConstraints />
                                     </rowConstraints>
                                     <children>
-                                        <Label GridPane.rowIndex="1" fx:id="comment1" text="qweqweqe">
+                                        <Label fx:id="comment1" text="страница невыбрана" GridPane.rowIndex="1">
                                             <GridPane.margin>
-                                                <Insets left="5" right="5"/>
+                                                <Insets left="5" right="5" />
                                             </GridPane.margin>
                                         </Label>
                                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints />
+                     </columnConstraints>
                                 </GridPane>
 
-                                <TextArea wrapText="true" fx:id="mainText"  VBox.vgrow="ALWAYS">
+                                <TextArea fx:id="mainText" wrapText="true" VBox.vgrow="ALWAYS">
                                     <padding>
                                         <Insets bottom="5" top="5" />
                                     </padding>
@@ -192,9 +197,9 @@
                                     </VBox>
                                     <VBox>
 
-                                        <TextField prefHeight="20" fx:id="textButton" />
-                                        <TextField prefHeight="20" fx:id="numberButton" />
-                                        <TextField prefHeight="20" fx:id="comment" />
+                                        <TextField fx:id="textButton" prefHeight="20" />
+                                        <TextField fx:id="numberButton" prefHeight="20" />
+                                        <TextField fx:id="comment" prefHeight="20" />
                                     </VBox>
                                 </items>
                             </SplitPane>

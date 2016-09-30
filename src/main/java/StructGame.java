@@ -15,7 +15,7 @@ public class StructGame implements  Serializable {
     public  String comment;
     public  String text;
     public List<ButtonGame> buttons;
-    private  int selectedButton;
+    private  int selectedButton=-1;
     public List<Pair<String,String>> onLoadHappend;
 
 
@@ -24,6 +24,8 @@ public class StructGame implements  Serializable {
         ButtonGame buf=buttons.get(num);
         if(buf!=null){
             selectedButton=num;
+        }else {
+            selectedButton=-1;
         }
         return buf;
     }

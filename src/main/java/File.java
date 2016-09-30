@@ -18,6 +18,7 @@ public class File {
         try {
             os = new ObjectOutputStream(out);
             os.writeObject(obj);
+            os.close();
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -91,11 +92,13 @@ public class File {
         try {
             fos = new FileOutputStream(name);
             fos.write(serialize(obj));
+            fos.close();
         } catch (FileNotFoundException e) {
             System.out.println(e);
         } catch (IOException e) {
             System.out.println(e);
         }
+
     }
 
     public <T> void Write(T[] objects, String name) {

@@ -75,6 +75,9 @@ public class ParseIf {
 
     //><=!
     private  Boolean Expression(String var1, String sing,String var2){
+        if(var1==null || sing==null || var2==null){
+            return  null;
+        }
         String chars = ">=<=!";
         String buf;
         Object varObj1,varObj2;
@@ -103,7 +106,7 @@ public class ParseIf {
             varObj1=var1;
         }
         varObj2=tryParse(var2);
-        if(varObj2!=null){
+        if(varObj2==null){
             varObj2=var2;
         }
 
@@ -316,9 +319,10 @@ public class ParseIf {
     }
 
     //to view bool
-    private String RegularExpression(String text) {
-        String regexp = "(-?\\d+)?(\".*?\")?(?:\\[(.*?)\\])?(>=|<=|[><=!])(?:\\[(.*?)\\])?(\".*?\")?(-?\\d+)?";
+    public String RegularExpression(String text) {
+       // String regexp = "(-?\\d+)?(\".*?\")?(?:\\[(.*?)\\])?(>=|<=|[><=!])(?:\\[(.*?)\\])?(\".*?\")?(-?\\d+)?";
 
+        String regexp =" (-?\\d+)?(\".*?\")?(?:\\[(.*?)\\])?(?:\\h*)?(>=|<=|[><=!])(?:\\h*)?(?:\\[(.*?)\\])?(\".*?\")?(-?\\d+)?";
         StringBuilder Sb = new StringBuilder(text);
 
         Pattern pattern = Pattern.compile(regexp);

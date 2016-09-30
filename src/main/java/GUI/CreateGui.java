@@ -37,8 +37,10 @@ import javafx.util.StringConverter;
 import main.java.*;
 import org.omg.CORBA.Object;
 import sun.nio.cs.CharsetMapping;
+import sun.security.ssl.Debug;
 
 import javax.swing.*;
+import javax.swing.text.html.parser.Entity;
 import java.awt.*;
 import java.awt.TextArea;
 import java.util.*;
@@ -52,14 +54,6 @@ import java.util.function.Predicate;
 public class CreateGui {
 
     private int SkipifContent = 1;
-
-
-   /* public void TestCreateContentAccordion(Accordion accordion) {
-
-        CreateFillContentAccordion(accordion);
-
-    }*/
-
 
     public void removeAtVariable(VBox vBox, java.lang.Object removeObj) {
         vBox.getChildren().remove(removeObj);
@@ -89,7 +83,22 @@ public class CreateGui {
     }
 
 
-    public void AddPageToTreeView(TreeItem parent, Game game, StructGame structGame) {
+    public void RecreateTreeView(TreeItem parent, Map.Entry<Integer, StructGame>[] list) {
+        parent.getChildren().clear();
+
+        for (int i = list.length - 1; i >= 0; i--) {
+            AddPageToTreeView(parent, list[i].getValue());
+        }
+    }
+
+    public void ClearIFContent(VBox ifContent, int skipifContent) {
+        if (ifContent.getChildren().size() > skipifContent) {
+            ifContent.getChildren().remove(0, ifContent.getChildren().size()-skipifContent);
+        }
+
+    }
+
+    public void AddPageToTreeView(TreeItem parent, StructGame structGame) {
 
 
         TreeItem item = new TreeItem(structGame.id + ") " + structGame.comment);
@@ -97,30 +106,6 @@ public class CreateGui {
         parent.getChildren().add(item);
 
 
-/*
-        ContextMenu contextMenu=new ContextMenu();
-        //item.setContextMenu(contextMenu);
-        MenuItem menuItem=new MenuItem("Перейти");
-        menuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                game.getPageById(structGame.id);
-            }
-        });
-        contextMenu.getItems().add(menuItem);
-        menuItem=new MenuItem("Удалить");
-        menuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                game.DeletePageById(structGame.id);
-                parent.getChildren().remove(item);
-            }
-        });
-        contextMenu.getItems().add(menuItem);
-
-        //parent.getRoot()
-
-        parent.getChildren().add(item);*/
     }
 
     public void AddNewEmptyVariable(VBox vBox, String key, String value) {
@@ -388,11 +373,11 @@ public class CreateGui {
         cb2.setValue("=");
         ComboBox<Triple> cb3 = new ComboBox();
 
-        переписать combobox для переменных к чртовой матери!!!
-        StringConverter stringConverter = new StringConverter<Triple>() {
+        //  переписать combobox для переменных к чртовой матери!!!
+       /* StringConverter stringConverter = new StringConverter<Triple>() {
             @Override
             public String toString(Triple user) {
-                System.out.println("string converter "+user);
+                System.out.println("string converter " + user);
                 if (user == null) {
                     return "1";
                 } else {
@@ -404,7 +389,7 @@ public class CreateGui {
             @Override
             public Triple fromString(String userId) {
                 Triple triple = Variables.instantiate().FindFullVarOrConst(userId);
-                System.out.println("triple"+triple.getKey());
+                System.out.println("triple" + triple.getKey());
 
                 if (triple == null) {
 
@@ -415,6 +400,9 @@ public class CreateGui {
 
             }
         };
+
+          cb.setConverter(stringConverter);
+          cb3.setConverter(stringConverter);*/
         Callback viewCellList = new Callback<ListView<Triple>, ListCell<Triple>>() {
             @Override
             public ListCell<Triple> call(ListView<Triple> param) {
@@ -432,10 +420,34 @@ public class CreateGui {
                 };
             }
         };
-        cb.setConverter(stringConverter);
-        cb3.setConverter(stringConverter);
         cb.setCellFactory(viewCellList);
         cb3.setCellFactory(viewCellList);
+
+        StringConverter<Triple> stringConverter = new StringConverter<Triple>() {
+            @Override
+            public String toString(Triple object) {
+                if (object != null) {
+                    return object.getKey();
+                }
+                return null;
+
+            }
+
+            @Override
+            public Triple fromString(String string) {
+                if (string != null) {
+                    Triple tr = Variables.instantiate().FindFullVarOrConst(string);
+                    if (tr == null) {
+                        tr = new Triple(string, "0", Variables.categories.notFound);
+                    }
+                    return tr;
+                }
+                return null;
+            }
+        };
+        cb.setConverter(stringConverter);
+        cb3.setConverter(stringConverter);
+
         cb.setEditable(true);
 
         cb.setId("Combo1");
@@ -443,7 +455,7 @@ public class CreateGui {
         cb3.setId("Combo3");
 
 
-        EventHandler<KeyEvent> OnKeyReleased = new EventHandler<KeyEvent>() {
+      /*  EventHandler<KeyEvent> OnKeyReleased = new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
 
@@ -482,6 +494,58 @@ public class CreateGui {
 
                 }
 
+            }
+        }*/
+        ;
+        EventHandler<KeyEvent> OnKeyReleased = new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (!event.getText().equals("")) {
+                    ComboBox combo = (ComboBox) event.getSource();
+
+
+                    // System.out.println("enter " + combo.getSelectionModel().getSelectedItem() + " " + combo.getEditor().getText() + "/  " + combo.getItems().size());
+
+
+                    List<Triple> newList = Variables.instantiate().FindVarAndConst(combo.getEditor().getText());
+
+
+                    combo.getItems().removeIf(new Predicate() {
+                        @Override
+                        public boolean test(java.lang.Object o) {
+                            System.out.println("rem " + !newList.contains(o));
+                            return !newList.contains(o);
+                        }
+                    });
+
+                    newList.removeIf(new Predicate<Triple>() {
+                        @Override
+                        public boolean test(Triple triple) {
+                            System.out.println("NewRem " + combo.getItems().contains(triple));
+                            return combo.getItems().contains(triple);
+                        }
+                    });
+
+                   /* for(int i=0; i<newList.size();i++){
+                        System.out.println("  "+newList.get(i));
+                    }
+                    System.out.println("--------------------");*/
+
+                  /*  for(int i=0; i<combo.getItems().size();i++){
+                        System.out.println("  "+combo.getItems().get(i));
+                    }
+                    System.out.println("--------------------");*/
+                    combo.getItems().addAll(newList);
+
+
+                    if (combo.getItems().size() == 0) {
+                        combo.hide();
+                    } else {
+                        if (event.getCode() != KeyCode.ENTER) {
+                            combo.show();
+                        }
+                    }
+                }
             }
         };
         cb.setOnKeyReleased(OnKeyReleased);
@@ -541,7 +605,50 @@ public class CreateGui {
         return null;
     }
 
-    public void CreateIFBlock(VBox vBoxParent, IfThen whatHappend) {
+
+    public  void PopupListSetKeyReleased(javafx.scene.control.TextArea textArea, ListView list, Popup popup1){
+        textArea.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                boolean openList=false;
+                if(event.getCode()== KeyCode.SHIFT && event.isControlDown()){
+                    openList=true;
+                    textArea.appendText("[");
+                }
+
+                if (event.getText().equals("[")|| openList) {
+                    textArea.setUserData(textArea.getCaretPosition());
+
+                    Point2D p = textArea.localToScene(0.0, 0.0);
+                    double x = p.getX() + textArea.getScene().getX() + textArea.getScene().getWindow().getX();
+                    double y = p.getY() + textArea.getScene().getY() + textArea.getScene().getWindow().getY();
+                    x += textArea.getWidth();
+                    list.getItems().clear();
+                    list.getItems().addAll(Variables.instantiate().variable);
+                    popup1.show(textArea, x, y);
+                }
+
+
+                if (event.getText().equals("]")) {
+                    popup1.hide();
+                    textArea.setUserData(null);
+
+                }
+            }
+        });
+
+        textArea.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (oldValue) {
+                    popup1.hide();
+                }
+            }
+        });
+    }
+
+
+    public void CreateIFBlock(VBox vBoxParent, IfThen whatHappend,ListView listView,Popup popup) {
         double opacity = 0.3;
         GridPane gp = new GridPane();
 
@@ -553,6 +660,8 @@ public class CreateGui {
         labIF.setAlignment(Pos.TOP_LEFT);
         javafx.scene.control.TextArea textArea = new javafx.scene.control.TextArea();
         textArea.setId("IF");
+
+        PopupListSetKeyReleased(textArea,listView,popup);
         textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -603,10 +712,6 @@ public class CreateGui {
             }
         }
         AddThenBlock(vBox, null, true);
-
-
-        //gp.add(flowP,0,0);
-        // flowP.getChildren().addAll(labIF,new Label("( "),new Label(" )"));
 
         vBoxParent.getChildren().add(vBoxParent.getChildren().size() - SkipifContent, gp);//2 button exist
         //return gp;
@@ -675,8 +780,4 @@ public class CreateGui {
     }
 
 
-  /*  public Button CreateButtonOfChoice(VBox parent, String name,int howElemensSkip) {
-
-        return button;
-    }*/
 }

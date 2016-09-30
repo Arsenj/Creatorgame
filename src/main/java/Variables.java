@@ -16,7 +16,7 @@ public class Variables implements Serializable {
         private transient static Variables inst;
     public Map<categories, String> titleName;
 
-    public static enum categories {things, character, people, userVariable,constant}
+    public static enum categories {things, character, people, userVariable,constant,notFound}
 
 
     public  List<Triple> FindOptions(String str){
@@ -36,6 +36,23 @@ public class Variables implements Serializable {
         return  l;
     }
 
+    public List<Triple> FindVarAndConst(String str){
+        List<Triple> l=new ArrayList<>();
+        if(str==null || str.isEmpty()){
+            return l;
+        }
+        for (Triple item: variable){
+            if(item.getKey().contains(str)){
+                l.add(item);
+            }
+        }
+        for(Triple item:options){
+            if(item.getKey().contains(str)){
+                l.add(item);
+            }
+        }
+        return  l;
+    }
 
     public  Triple FindFullVarOrConst(String str){
        Triple ret=null;

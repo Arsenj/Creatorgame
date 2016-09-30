@@ -1,9 +1,11 @@
 package main.java;
 
+import java.io.Serializable;
+
 /**
  * Created by arsen on 10.09.2016.
  */
-public class Triple {
+public class Triple implements Serializable {
     private String key;
     private  String value;
     private  Variables.categories index;

@@ -2,6 +2,7 @@ package main.java.GUI;
 
 
 import com.sun.webkit.*;
+import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.collections.*;
 import javafx.event.EventHandler;
@@ -88,6 +89,7 @@ public class SampleController {
 
 
     Popup popup;
+    ListView listView;
 
 
     CreateGui createGui;
@@ -104,66 +106,16 @@ public class SampleController {
 
         InitialVar();
 
-        /*Variables.instantiate().variable.add(new Triple("Стол", "1", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Стул", "1", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Палка", "1", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Камень", "1", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Деньги", "15", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Деньги", "15", Variables.categories.things));
-        Variables.instantiate().variable.add(new Triple("Иван", "15", Variables.categories.people));
-        Variables.instantiate().variable.add(new Triple("Погода", "\"Зима\"", Variables.categories.userVariable));*/
-
-
     }
 
+    //game
     public void TestTreeView() {
-        createGui.AddPageToTreeView(rootPageTree, game, game.getCurrentPage());
+        createGui.AddPageToTreeView(rootPageTree, game.getCurrentPage());
     }
 
 
     public void FillTree() {
-        //тестовое для пробы
-        /*
-        StructGame structGame = new StructGame();
-        structGame.id = 1;
-        ButtonGame buttonGame = new ButtonGame("Первая кнопка");
 
-
-        System.out.println(Variables.instantiate().variable.size());
-        List<Then> thenList = new ArrayList<>();
-        thenList.add(new Then("Стол", "+", "1"));
-        thenList.add(new Then("Погода", "=", "\"погода\""));
-        buttonGame.whatHappend.add(new IfThen("([Стол]>5&[Погода]=\"погода\")", thenList));
-
-        //new Pair<>("([TСтол]>5&[UПогода]=\"погода\")","[TСтол]+1;[UПогода]=\"Лето\""));
-        //  buttonGame.whatHappend.add(new Pair<>("([TСтол]>5&[UПогода]=\"погода\")","[TСтол]+1;[UПогода]=\"Лето\";move1"));
-        structGame.buttons.add(buttonGame);
-        buttonGame = new ButtonGame("Вторая кнопка");
-        structGame.buttons.add(buttonGame);
-        game.AddNewPage(structGame);
-        //game.structGames.put(1,structGame);
-        //2
-        structGame = new StructGame();
-        structGame.id = 2;
-        buttonGame = new ButtonGame("2.1");
-        thenList = new ArrayList<>();
-        thenList.add(new Then("Стол", "-", "1"));
-        buttonGame.whatHappend.add(new IfThen("IfIfIf", thenList));
-
-
-        structGame.buttons.add(buttonGame);
-        buttonGame = new ButtonGame("2.2");
-        thenList = new ArrayList<>();
-        thenList.add(new Then("Стол", "=", "3"));
-        thenList.add(new Then("Стул", "=", "0"));
-        buttonGame.whatHappend.add(new IfThen("2.2", thenList));
-
-        structGame.buttons.add(buttonGame);
-        game.AddNewPage(structGame);*/
-        //game.structGames.put(null,structGame);
-
-
-        //test
     }
 
     public void onLostFocus() {
@@ -172,17 +124,15 @@ public class SampleController {
 
     @FXML
     public void initialize() {
-
-
         GuiInit();
-        // GoToPage();
+
     }
 
     public void FillButtonProperties(ButtonGame buttonGame) {
         if (buttonGame == null) {
             textButton.clear();
             numberButton.clear();
-            //comment.clear();
+
         } else {
 
             textButton.setText(buttonGame.text);
@@ -193,48 +143,44 @@ public class SampleController {
 
     //проверить :запустить этот метод после того, как уже будет ряд кнопок
     public void GoToPage() {//change Exists button
-        List<ButtonGame> buttonGames = game.getCurrentPage().buttons;
-        int size = pageContent.getChildren().size();
+        if (game.getCurrentPage() != null) {
+            selectedPage(true);
+            List<ButtonGame> buttonGames = game.getCurrentPage().buttons;
+            if (buttonGames.size() == 0) {
+                ChoiseButtonSelected(false);
+            } else {
+                ChoiseButtonSelected(true);
+            }
+            int size = pageContent.getChildren().size();
 
 
+            if (buttonGames.size() + howElemensSkip < size) {
+                pageContent.getChildren().remove(buttonGames.size() + howElemensSkip, size);
+            }
+            Button buttonBuf;
+            for (int i = 0; i < buttonGames.size(); i++) {
+                if (pageContent.getChildren().size() - howElemensSkip - i > 0) {
+                    buttonBuf = (Button) pageContent.getChildren().get(i + howElemensSkip);
+                    buttonBuf.setText(buttonGames.get(i).text);
+                    if (buttonBuf.isFocused()) {
 
-        if (buttonGames.size() + howElemensSkip < size) {
-            pageContent.getChildren().remove(buttonGames.size() + howElemensSkip, size);
-        }
-        Button buttonBuf;
-        for (int i = 0; i < buttonGames.size(); i++) {
-            if (pageContent.getChildren().size() - howElemensSkip - i > 0) {
-                buttonBuf = (Button) pageContent.getChildren().get(i + howElemensSkip);
-                buttonBuf.setText(buttonGames.get(i).text);
-                if (buttonBuf.isFocused()) {
 
+                    }
+                } else {
+                    AddButtonChoice(buttonGames.get(i));
 
                 }
-            } else {
-                AddButtonChoice(buttonGames.get(i));
-                //OnaddButtonChoice();
-
-
-                // pageContent.getChildren().remove(i+howElemensSkip-1);
             }
+            FillButtonProperties(game.getCurrentPage().getSelectedButton());
+            ReloadIfContent(game.getCurrentPage().getSelectedButton());
+
+            int id = game.getCurrentPage().id;
+            String commSet = id + ")" + game.getCurrentPage().comment;
+            comment.setText(game.getCurrentPage().comment);
+            comment1.setText(commSet);
+
+
         }
-        FillButtonProperties(game.getCurrentPage().getSelectedButton());
-        ReloadIfContent(game.getCurrentPage().getSelectedButton());
-
-        int id=game.getCurrentPage().id;
-        String commSet=id+")"+ game.getCurrentPage().comment;
-        comment.setText(game.getCurrentPage().comment);
-        comment1.setText(commSet);
-
-       /* Integer index=game.GetSerialNumberPage(game.getCurrentPage().id);
-        if(index!=null){
-            ((TreeItem)rootPageTree.getChildren().get(index)).setValue(commSet);
-        }else{
-            System.out.println("TreeItem not found");
-        }*/
-       // протестировать добавление сcoment-a
-
-
     }
 
 
@@ -278,11 +224,6 @@ public class SampleController {
             }
         });
                     /*Конец бредокода*/
-
-
-        //  newButton = createGui.CreateButtonOfChoice(pageContent, name,howElemensSkip);
-
-
         newButton.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
             @Override
             public void handle(javafx.event.ActionEvent event) {
@@ -296,42 +237,33 @@ public class SampleController {
             }
         });
 
-        //       newButton.focusedProperty().addListener(new ChangeListener<Boolean>() {
-//
-//            @Override
-//            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-//
-//                if (newValue) {
-//                    int number = pageContent.getChildren().indexOf(newButton) - howElemensSkip;
-//
-//                    ButtonGame buttonGame = game.getCurrentPage().getButton(number);//numbering from zero and exists first button
-//                    textButton.setText(buttonGame.text);
-//                    numberButton.setText(String.valueOf(number + 1));
-//
-//                    ReloadIfContent(buttonGame);
-//
-//                }
-//            }
-//        });
-//
 
+    }
 
+    public void PrintVariables() {
+        for (Triple item : Variables.instantiate().variable) {
+            System.out.println(item.getKey());
+        }
+
+    }
+
+    public void PrintGams() {
+        System.out.println(game.getCountPage());
     }
 
     private void DestroyGame() {
         Variables.instantiate().Reset();
-        for (TitledPane item : listVariable.getPanes()) {
-            VBox vBox = (VBox) ((ScrollPane) item.getContent()).getContent();
-            vBox.getChildren().remove(0, vBox.getChildren().size() - 1);
-        }
-        game.Refresh();
-        //game=new Game();
 
+        game.Refresh();
+
+        ReloadAll();
     }
 
     public void NewGame() {
         DestroyGame();
+
         listVariable.setDisable(false);
+        parentTreeView.setDisable(false);
 
     }
 
@@ -353,22 +285,29 @@ public class SampleController {
         });
         fileDialog.setVisible(true);
         String fileName = fileDialog.getFile();
-        if (fileName != null) {
+        String dir = fileDialog.getDirectory();
+        fileDialog.setVisible(false);
+        fileDialog.dispose();
+
+        if (fileName != null && dir != null && fileName.lastIndexOf(".txtG") > 0) {
             DestroyGame();
 
             File file = new File();
-            settings = file.<Settings>Read(fileName);
+            settings = file.<Settings>Read(dir + fileName);
             if (settings != null) {
-                boolean load = Variables.Load(file, settings.getVariableFileName());
+                String pathOther = dir + "/" + settings.getNameGame() + "_bin/";
+                boolean load = Variables.Load(file, pathOther + settings.getVariableFileName());
                 if (load) {
-                    load = game.Load(file, settings.getStrucrGameFileName());
+                    load = game.Load(file, pathOther + settings.getStrucrGameFileName());
                     if (load) {
                         System.out.println("Game loaded");
+                        ReloadAll();
                         LockAll(false);
+                        selectedPage(false);
                         return;
 
                     } else {
-                        System.out.println("Game loaded");
+                        System.out.println("Game not loaded");
                     }
 
                 } else {
@@ -380,41 +319,115 @@ public class SampleController {
 
             }
         }
-        LockAll(false);
+
     }
 
     public void SaveGame() {
 
     }
 
+    void ReloadAll() {
+        pageContent.getChildren().remove(howElemensSkip, pageContent.getChildren().size());
+        comment.clear();
+        numberButton.clear();
+        textButton.clear();
+        listVariable.getPanes().clear();
+        createGui.CreateFillContentAccordion(listVariable);
+        createGui.RecreateTreeView(rootPageTree, game.getPages());
+        createGui.ClearIFContent(iFContent, skipifContent);
+        iFContent.setDisable(true);
+
+
+    }
+
+    void selectedPage(boolean select) {
+        if (!select) {
+            comment1.setText("страница невыбрана");
+            addButtonChoice.setDisable(true);
+            ChoiseButtonSelected(false);
+        } else {
+            addButtonChoice.setDisable(false);
+        }
+    }
+
+    void ChoiseButtonSelected(boolean select) {
+        this.iFContent.setDisable(!select);
+        numberButton.setDisable(!select);
+        textButton.setDisable(!select);
+
+    }
+
     void LockAll(boolean lock) {
-        addButtonChoice.setDisable(lock);
+
         parentTreeView.setDisable(lock);
         createBlockIf.setDisable(lock);
         this.save.setDisable(lock);
-        this.iFContent.setDisable(lock);
+        if (lock) {
+            selectedPage(false);
+
+        }
+
         this.anchor1.setDisable(lock);
         listVariable.setDisable(lock);
     }
 
     public void SaveAsGame() {
         Frame frame = new Frame();
-        FileDialog fileDialog = new FileDialog(frame);
+        FileDialog fileDialog = new FileDialog(frame, "Сохранить как..", FileDialog.SAVE);
+        fileDialog.setFilenameFilter(new FilenameFilter() {
+            @Override
+            public boolean accept(java.io.File dir, String name) {
+                if (name.lastIndexOf('.') > 0) {
+                    // get last index for '.' char
+                    int lastIndex = name.lastIndexOf('.');
 
-        //fileDialog.setFile("*.txtG");
+                    // get extension
+                    String str = name.substring(lastIndex);
+
+                    // match path name extension
+                    if (str.equals(".txtG")) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
         fileDialog.setFilenameFilter(new FilenameFilter() {
             @Override
             public boolean accept(java.io.File dir, String name) {
                 return name.endsWith(".txtG");
             }
         });
+
+
         fileDialog.setVisible(true);
-        fileDialog.setFile(fileDialog.getName());
-        settings.setNameGame(fileDialog.getName());
-        File file = new File();
-        file.<Settings>Write(settings, settings.getNameGame());
-        Variables.Save(file, settings.getVariableFileName());
-        game.Save(file, settings.getStrucrGameFileName());
+
+        String dir = fileDialog.getDirectory();
+        String fileName = fileDialog.getFile();
+        int pos = fileName.lastIndexOf(".txtG");
+        if (pos > 0) {
+            fileName = fileName.substring(0, pos);
+        }
+        fileDialog.setVisible(false);
+        fileDialog.dispose();
+        if (dir != null && fileName != null) {
+            settings = new Settings(fileName);
+            File file = new File();
+            String pathOther = dir + fileName + "_bin";
+            java.io.File mkDir = new java.io.File(pathOther);
+            if (!mkDir.exists()) {
+                mkDir.mkdir();
+            }
+
+            file.<Settings>Write(settings, dir + settings.getFileNameGame() + ".txtG");
+            Variables.Save(file, pathOther + "/" + settings.getVariableFileName());
+            game.Save(file, pathOther + "/" + settings.getStrucrGameFileName());
+
+
+        }
+
+
     }
 
     public void ExitGame() {
@@ -422,6 +435,38 @@ public class SampleController {
     }
 
     public boolean CheckIf(String s) {
+        ParseIf parseIf = new ParseIf();
+        int num = 0;
+        int num2;
+         проверка на валидные данные в if-e
+        int pos = 0, pos2 = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '"') {
+                pos = s.indexOf('"', i);
+                if (pos == -1) {
+                    System.out.println("Ошибка в позиции " + i + " конец строки не найден");
+                    return false;
+                }
+                i = pos;
+                continue;
+            }
+            if (s.charAt(i) == '[') {
+                pos = s.indexOf(']', i);
+                pos2 = s.indexOf('[', i);
+                if (pos == -1 || (pos2 > -1 && pos2 < pos)) {
+                    System.out.println("Ошибка в позиции " + i + " конец переменной не найден");
+                    return false;
+                }
+                if (Variables.instantiate().GetFirst(s.substring(i, pos)) == null) {
+                    System.out.println("Ошибка в позиции " + i + " переменная неопознана.");
+                    return false;
+                }
+                i = pos;
+                continue;
+            }
+        }
+        String res = parseIf.RegularExpression(s);
+        System.out.println("Parse " + res);
         return true;
     }
 
@@ -471,7 +516,7 @@ public class SampleController {
                             continue;
                         }
 
-                        if (Variables.instantiate().Find(cb[0].getEditor().getText()).size() == 0) {
+                        if (Variables.instantiate().FindFullVarOrConst(cb[0].getEditor().getText()) == null) {
                             System.out.println("UserMessage: variable " + cb[0].getEditor().getText() + " not found");
                             ok = false;
                             continue;
@@ -532,7 +577,7 @@ public class SampleController {
 
             countAdd = buttonSize - (contentSize);
             for (int i = 0; i < countAdd; i++) {
-                createGui.CreateIFBlock(iFContent, buttonGame.whatHappend.get(i + contentSize));
+                createGui.CreateIFBlock(iFContent, buttonGame.whatHappend.get(i + contentSize), listView, popup);
                 //CreateBlockIf();
             }
         }       //а тут остаётся только переписать существующие блоки
@@ -594,13 +639,14 @@ public class SampleController {
 
     //private  void RemoveItemTree
 
-    private void ButtonGoToPage(MyTreeCell myTreeCell){
+    private void ButtonGoToPage(MyTreeCell myTreeCell) {
         Integer parsId = GetIdByValueTreeItem((String) myTreeCell.getItem());
-        System.out.println("Current:"+game.getCurrentPage().id+" GoTo:"+parsId);
+        //System.out.println("Current:"+game.getCurrentPage().id+" GoTo:"+parsId);
         if (parsId != null) {
             StructGame structGame = game.getPageById(parsId);
         }
     }
+
 
     private void GuiInit() {
         LockAll(true);
@@ -631,6 +677,8 @@ public class SampleController {
             }
         });*/
         createGui.CreateEmptyContentAccordion(listVariable);
+
+
         parentTreeView.setCellFactory(new Callback<TreeView, TreeCell>() {
             @Override
             public TreeCell call(TreeView param) {
@@ -641,7 +689,7 @@ public class SampleController {
                 myTreeCell.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent event) {
-                        if(event.getButton()==MouseButton.PRIMARY && event.getClickCount()>=2){
+                        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() >= 2) {
                             ButtonGoToPage(myTreeCell);
                         }
 
@@ -683,20 +731,10 @@ public class SampleController {
         });
 
 
-      /*  rootPageTree.getChildren().addListener(new ListChangeListener() {
-            @Override
-            public void onChanged(Change c) {
-                System.out.println("addChild");
-
-
-            }
-        });*/
-
-
         popup = new Popup();
         javafx.scene.control.ScrollPane pane = new javafx.scene.control.ScrollPane();
         popup.getContent().add(pane);
-        ListView listView = new ListView();
+        listView = new ListView();
         pane.setContent(listView);
         listView.setPrefWidth(100);
         listView.setPrefHeight(100);
@@ -725,12 +763,31 @@ public class SampleController {
         listView.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
+                TextArea textArea;
+                if (popup.getOwnerNode() instanceof TextArea) {
+                    textArea = (TextArea) popup.getOwnerNode();
+                } else {
+                    return;
+                }
 
-                if (!event.getCode().isArrowKey() && !event.getCode().isFunctionKey() && !event.getCode().isNavigationKey()) {
-                    int startIndex = mainText.getText().lastIndexOf('[', mainText.getCaretPosition()) + 1;
+                if (event.getCode() == KeyCode.ENTER) {
+                    System.out.println("List var " + listView.getSelectionModel().getSelectedItem());
+                    if (listView.getSelectionModel().getSelectedItem() != null) {
+                        String setStr = ((Triple) listView.getSelectionModel().getSelectedItem()).getKey();
+                        //System.out.println("start " + start + " finish " + finish);
+                        int index = textArea.getText().lastIndexOf('[', textArea.getCaretPosition());
+                        textArea.deleteText(index, textArea.getCaretPosition());
+
+                        textArea.insertText(textArea.getCaretPosition(), "[" + setStr + "]");
+                        popup.hide();
+                    }
+                }
+                if (!event.getCode().isArrowKey() && !event.getCode().isFunctionKey() && !event.getCode().isNavigationKey() && !event.getCode().isModifierKey()) {
+
+                    int startIndex = textArea.getText().lastIndexOf('[', textArea.getCaretPosition()) + 1;
                     if (startIndex > 0) {
 
-                        List<Triple> res = Variables.instantiate().Find(mainText.getText().substring(startIndex, mainText.getCaretPosition()));
+                        List<Triple> res = Variables.instantiate().Find(textArea.getText().substring(startIndex, textArea.getCaretPosition()));
                         if (res != null && !listView.getItems().equals(res)) {
                             listView.getItems().clear();
                             listView.getItems().addAll(res);
@@ -739,20 +796,7 @@ public class SampleController {
 
                 }
 
-                if (event.getCode() == KeyCode.ENTER) {
-                    if (listView.getSelectionModel().getSelectedItem() != null) {
-                        String setStr = ((Triple) listView.getSelectionModel().getSelectedItem()).getKey();
-                        //System.out.println("start " + start + " finish " + finish);
-                        int index = mainText.getText().lastIndexOf('[', mainText.getCaretPosition());
-                        mainText.deleteText(index, mainText.getCaretPosition());
 
-                        /*if (mainText.getCaretPosition() > 0 && mainText.getText().charAt(mainText.getCaretPosition() - 1) == '[') {
-                            mainText.deletePreviousChar();
-                        }*/
-                        mainText.insertText(mainText.getCaretPosition(), "[" + setStr + "]");
-                        popup.hide();
-                    }
-                }
                 if (event.getCode() == KeyCode.ESCAPE) {
                     popup.hide();
                 }
@@ -760,75 +804,7 @@ public class SampleController {
 
         });
 
-
-        mainText.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if (event.getText().equals("[")) {
-                    mainText.setUserData(mainText.getCaretPosition());
-
-                    Point2D p = mainText.localToScene(0.0, 0.0);
-                    double x = p.getX() + mainText.getScene().getX() + mainText.getScene().getWindow().getX();
-                    double y = p.getY() + mainText.getScene().getY() + mainText.getScene().getWindow().getY();
-                    x += mainText.getWidth();
-                    listView.getItems().clear();
-                    listView.getItems().addAll(Variables.instantiate().variable);
-                    popup.show(mainText, x, y);
-                }
-              /*  Integer pos = (Integer) mainText.getUserData();
-                if (pos != null) {
-                    System.out.println("POS: " + pos + " " + mainText.getCaretPosition());
-                    if (pos < mainText.getCaretPosition()) {
-                        System.out.println("sub " + mainText.getText().substring(pos, mainText.getCaretPosition()));
-                        listView.getItems().clear();
-                        listView.getItems().addAll(
-                                Variables.instantiate().Find(mainText.getText().substring(pos, mainText.getCaretPosition())));
-                    }
-                }*/
-
-                if (event.getText().equals("]")) {
-                    popup.hide();
-                    mainText.setUserData(null);
-
-                }
-            }
-        });
-            /*@Override
-            public void hendler(mainTextEvent e) {
-
-            }
-
-        });*/
-
-
-
-       /* mainText.setOnKeyPressed(new EventHandler<KeyEvent>() {
-                @Override
-                public void handle(KeyEvent event) {
-                    if (event.getText().equals("[")) {
-
-
-                    }
-                    if (event.getText().equals("]") || event.getCode()==KeyCode.ESCAPE) {
-                        popup.hide();
-                    }
-                }
-            });*/
-        mainText.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (oldValue) {
-                    popup.hide();
-                }
-            }
-        });
-
-
-        //  код выше не работает. хз
-
-
-        //listView.getItems().addAll(new Object[]{"1","2","3","4","5"});
-
+        createGui.PopupListSetKeyReleased(mainText, listView, popup);
 
         //?????????????????????
         addButtonChoice.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -868,6 +844,7 @@ public class SampleController {
 
                                 pageContent.getChildren().remove(number + howElemensSkip);
                                 game.getCurrentPage().buttons.remove(number);//numbering from zero and exists first button
+                                ChoiseButtonSelected(false);
                                 //if(game.getCurrentPage().getIndexSelectedButton()==number){
                                 numberButton.clear();
                                 textButton.clear();
@@ -911,7 +888,6 @@ public class SampleController {
         });
 
 
-
         textButton.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -930,11 +906,11 @@ public class SampleController {
             @Override
             public void handle(KeyEvent event) {
                 if (event.getCode() == KeyCode.ENTER) {
-                    StructGame structGame= game.getCurrentPage();
-                    if(structGame!=null){
-                        structGame.comment=comment.getText();
+                    StructGame structGame = game.getCurrentPage();
+                    if (structGame != null) {
+                        structGame.comment = comment.getText();
 
-                        String commSet=structGame.id+") "+structGame.comment;
+                        String commSet = structGame.id + ") " + structGame.comment;
 
                         Integer index = game.GetSerialNumberPage(game.getCurrentPage().id);
                         if (index != null) {
@@ -966,17 +942,6 @@ public class SampleController {
     }
 
     private void InitialVar() {
-        //  listTitle = new ArrayList<>();
-        //ObservableList<Triple> observableMap = FXCollections.observableList(Variables.instantiate().variable);
-
-//        listTitle.add(new Pair<String, Map>("Вещи", observableMap));
-//        observableMap = FXCollections.observableMap(Variables.instantiate().character);
-//        listTitle.add(new Pair<String, Map>("Характеристики", observableMap));
-//        observableMap = FXCollections.observableMap(Variables.instantiate().people);
-//        listTitle.add(new Pair<String, Map>("Люди", observableMap));
-//        observableMap = FXCollections.observableMap(Variables.instantiate().userVariable);
-//        listTitle.add(new Pair<String, Map>("Пользовательские", observableMap));
-
 
         createGui = new CreateGui();
         game = new Game();
@@ -992,8 +957,9 @@ public class SampleController {
                     if (num == 1) {
                         LockAll(false);
                     }
-                    if(num==0){
+                    if (num == 0) {
                         LockAll(true);
+                        selectedPage(false);
                     }
 
 
@@ -1010,7 +976,7 @@ public class SampleController {
                             return false;
                         }
                     });
-                 //   rootPageTree.setValue(String.format("Всего страниц %n", game.getCountPage()));
+
                 }
                 GoToPage();
                 rootPageTree.setValue(String.format("Всего страниц %s", game.getCountPage()));
@@ -1028,20 +994,12 @@ public class SampleController {
             }
         });
 
-//        observableMap.addListener(new MapChangeListener() {
-//            @Override
-//            public void onChanged(Change change) {
-//
-//            }
-//        });
-
-
     }
 
 
     @FXML
     public void CreateBlockIf() {
-        createGui.CreateIFBlock(iFContent, null);
+        createGui.CreateIFBlock(iFContent, null, listView, popup);
         //iFContent.getChildren().add();
     }
 
@@ -1055,9 +1013,7 @@ public class SampleController {
     }
 
     public void checkMemory() {
-        // Variables.instantiate().Find("qwe");
 
-        // Variables.instantiate().Find("qwe");
     }
 
 

@@ -5,12 +5,13 @@ package main.java; /**
 import javafx.beans.binding.StringBinding;
 import javafx.util.Pair;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
 import java.util.regex.Matcher;
 
-public class ButtonGame {
+public class ButtonGame implements Serializable{
     public boolean enable;
     //public  boolean textBlock;
     public String ifButtonExist;

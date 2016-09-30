@@ -2,10 +2,12 @@ package main.java;
 
 import javafx.util.Pair;
 
+import java.io.Serializable;
+
 /**
  * Created by arsen on 09.09.2016.
  */
-public class Then {
+public class Then implements Serializable{
     protected Triple variable1;
     protected Triple variable2;
     protected String operator;
